@@ -7,9 +7,21 @@ Created on Fri Nov  1 21:38:42 2019
 import matplotlib.pyplot as plt
 
 
+def enum(*sequential, **named):
+    enums = dict(zip(sequential, range(len(sequential))), **named)
+    return type('Enum', (), enums)
+
+
+#enumeration representing directions
+Direction = enum('Right', 'UpRight', 'Up', 'UpLeft', 'Left', 'DownLeft', 'Down', 'DownRight', 'None')
+
+
+
+
+
+
 class BinImage :
     """Class representing a binary image"""
-    
     
     def __init__(self, image, black, white) :
         """constructor of the binary image"""
@@ -92,6 +104,10 @@ class BinImage :
             i+=1
             j+=1
         return i,j
+    
+    def getNeighbour(self, p, direction) :
+        coord = self.getNeighbourCoord(p[0], p[1], direction)
+        return self.getPixel(coord[0], coord[1])
         
     def getDirection(p1, p2) :
         """gives the direction to go to p2 from p1"""
@@ -145,13 +161,18 @@ class BinImage :
         
         plt.axis('scaled')
         plt.show()
+        
+    def getContour(self) :
+        contour = []
+        for pix in self.blackIterator() :
+            for direction in range(0,8,(2-self.black)) :
+                p2 = self.getNeighbourCoord(pix[0], pix[1], direction)
+                if self.getPixel(p2[0], p2[1])==0 :
+                    if p2 not in contour :
+                        contour.append(p2)
+        return contour
+
+    def addPixel(self, p) :
+        self.image[p[0]][p[1]] = 1
 
 
-
-def enum(*sequential, **named):
-    enums = dict(zip(sequential, range(len(sequential))), **named)
-    return type('Enum', (), enums)
-
-
-#enumeration representing directions
-Direction = enum('Right', 'UpRight', 'Up', 'UpLeft', 'Left', 'DownLeft', 'Down', 'DownRight', 'None')
