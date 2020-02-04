@@ -75,7 +75,7 @@ imageTest = [[0,0,0,0,0,0,0,0],
 """
 
 #image = BinImage.BinImage(imageTest, False, True)
-image = generation.randomImage(10)
+image = generation.randomImage(50)
 evol = Evolution.Evolution(image)
 image.show()
 

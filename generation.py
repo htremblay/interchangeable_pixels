@@ -25,4 +25,5 @@ def randomImage(n) :
 			i+=1
 		else :
 			image.removePixel(newPix)
+			
 	return image
