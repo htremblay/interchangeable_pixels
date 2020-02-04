@@ -7,6 +7,7 @@ Created on Tue Jan 14 15:36:20 2020
 
 from BinImage import Direction
 from Evolution import Evolution
+import time
 
 def ksingular(image) :
 	"""gives the max k so that the image is k-singular"""
@@ -261,7 +262,6 @@ def step2(evol,k) :
 		towerPos = r[2]
 		
 		if len(contactsR)==0 :
-			print("Problem : image not connected")
 			combineTowers(evol, k+1, towerPos, r[1]-1)
 			for j in range(r[0], r[1]-1) :
 				evol.addAction(k+1, j, Direction.Up)
@@ -349,13 +349,22 @@ def step3(evol, k) :
 							combineTowers(evol, k+1, j, r[1]-1)
 	
 
-def algo1(evol) :
+def algo1(evol, name="algo1.gif", frame = 150) :
+	t1 = time.time()
 	k = ksingular(evol.currentImage)
 	while k>0 :
 		step2(evol, k)
 		step3(evol, k)
 		k = ksingular(evol.currentImage)
 	
+	t2 = time.time()
+	print("algo : %f s" % (t2-t1))
+	
 	evol.simplify()
-	evol.createGif("algo1.gif", 150)
+	t3 = time.time()
+	print("simplify : %f s" % (t3-t2))
+	
+	evol.createGif(name, frame)
+	t4 = time.time()
+	print("gif creation : %f s" % (t4-t3))
 				

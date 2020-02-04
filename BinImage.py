@@ -52,12 +52,14 @@ class BinImage :
         
     
     def blackIterator(self) :
+        """an iterator for black pixels"""
         for i in range(self.n) :
             for j in range(self.m) :
                 if self.image[i][j] : yield [i,j]
                 
     
     def whiteIterator(self) :
+        """an iterator for white pixels"""
         for i in range(self.n) :
             for j in range(self.m) :
                 if not self.image[i][j] : yield [i,j]
@@ -70,7 +72,7 @@ class BinImage :
         
         
     def getPixel(self, i, j) :
-        
+        """get the value of the pixel (i,j)"""
         if (i>=0 and i<self.n) :
             if (j>=0 and j<self.m) :
                 return self.image[i][j]
@@ -106,8 +108,25 @@ class BinImage :
         return i,j
     
     def getNeighbour(self, p, direction) :
+        """return the value  of the neighbour of (i,j), according
+        to the given direction"""
         coord = self.getNeighbourCoord(p[0], p[1], direction)
         return self.getPixel(coord[0], coord[1])
+    
+    def getNeighbours(self, p) :
+        """return the list of the neighbours of (i,j)"""
+        if self.getPixel(p[0], p[1])==0 : #white case
+            mode = self.white
+        else :
+            mode = self.black
+            
+        l = []
+        for direction in range(0,8,(2-mode)) :
+            p2 = self.getNeighbourCoord(p[0], p[1], direction)
+            if p2[0]>=0 and p2[0]<self.n and p2[1]>=0 and p2[1]<self.m :
+                l.append(p2)
+        return l
+        
         
     def getDirection(p1, p2) :
         """gives the direction to go to p2 from p1"""
@@ -163,16 +182,61 @@ class BinImage :
         plt.show()
         
     def getContour(self) :
+        """return a list that contains all the pixels adjacent to the image"""
         contour = []
         for pix in self.blackIterator() :
-            for direction in range(0,8,(2-self.black)) :
-                p2 = self.getNeighbourCoord(pix[0], pix[1], direction)
+            for p2 in self.getNeighbours(pix) :
                 if self.getPixel(p2[0], p2[1])==0 :
                     if p2 not in contour :
                         contour.append(p2)
         return contour
 
     def addPixel(self, p) :
+        """add a black pixel"""
         self.image[p[0]][p[1]] = 1
+        
+    def removePixel(self, p) :
+        """removes a black pixel"""
+        self.image[p[0]][p[1]] = 0
+        
+    
+    def getWhitePixels(self) :
+        """returns the list of all white pixels"""
+        l = []
+        for i in range(self.n) :
+            for j in range(self.m) :
+                if self.getPixel(i,j)==0 :
+                    l.append((i,j));
+        return l
+    
+    def getBlackPixels(self) :
+        """returns the list of all black pixels"""
+        l = []
+        for i in range(self.n) :
+            for j in range(self.m) :
+                if self.getPixel(i,j)==1 :
+                    l.append((i,j));
+        return l
+    
+    def isConnected(self, whiteMode=False) :
+        """check if the image is connect"""
+        if whiteMode :
+            notVisited = self.getWhitePixels()
+            color = 0
+        else :
+            notVisited = self.getBlackPixels()
+            color = 1
+        
+        waiting = [notVisited.pop()]
+        visited = []
+        while len(waiting)>0 :
+            pix = waiting.pop()
+            for neighbour in self.getNeighbours(pix) :
+                if self.getPixel(neighbour[0], neighbour[1])==color :
+                    if neighbour in notVisited :
+                        waiting.append(neighbour)
+                        notVisited.remove(neighbour)
+            visited.append(pix)
+        return (len(notVisited)==0)
 
 

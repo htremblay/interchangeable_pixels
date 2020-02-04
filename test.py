@@ -6,12 +6,18 @@ Created on Fri Nov  1 15:11:40 2019
 """
 
 from algo1 import ksingular, combineTowers, getBlocks, getTowers, towerize, getContacts, step2, step3, algo1
-from BinImage import BinImage
-from BinImage import Direction
-from Evolution import Evolution
+import BinImage
+import Evolution
+import generation
 
 
+imageTest = [[0,0,0,0,0],
+			 [0,1,1,0,0],
+			 [0,1,0,1,0],
+			 [0,1,1,1,0],
+			 [0,0,0,0,0],]
 
+"""
 imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -41,7 +47,6 @@ imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,1,0,0,1,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0]]
 
-"""
 
 imageTest = [[0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0],
@@ -69,11 +74,15 @@ imageTest = [[0,0,0,0,0,0,0,0],
 			 [0,0,1,0,1,1,1,0]]
 """
 
-image = BinImage(imageTest,False,True) #B4W8
-evol = Evolution(image)
+#image = BinImage.BinImage(imageTest, False, True)
+image = generation.randomImage(10)
+evol = Evolution.Evolution(image)
+image.show()
 
-algo1(evol)
-print(evol.getNbActions())
+
+#algo1(evol, "random.gif", 100)
+
+#print(evol.getNbActions())
 
 
 
