@@ -9,6 +9,7 @@ from BinImage import Direction
 from Evolution import Evolution
 import time
 
+
 def ksingular(image) :
     """gives the max k so that the image is k-singular"""
     towers = [0]*image.m
@@ -416,7 +417,13 @@ def algo1(evol) :
     while k>0 :
         step2(evol, k)
         step3(evol, k)
-        k = ksingular(evol.currentImage)
+        kprime = ksingular(evol.currentImage)
+        if k==kprime :
+            print("problem")
+            evol.firstImage.show()
+            evol.currentImage.show()
+            break
+        k=kprime
     
     t2 = time.time()
     print("algo : %f s" % (t2-t1))
@@ -424,3 +431,4 @@ def algo1(evol) :
     evol.simplify()
     t3 = time.time()
     print("simplify : %f s" % (t3-t2))
+    

@@ -13,12 +13,12 @@ from copy import deepcopy
 class Evolution :
     """class representing the evolution of a binary image"""
     
-    def __init__(self, image, actions=[]) :
+    def __init__(self, image) :
         self.firstImage = deepcopy(image)
         self.currentImage = image
-        self.actions = actions
+        self.actions = []
         self.nbAction = 0
-        for x in actions :
+        for x in self.actions :
             self.currentImage.movePixel(x)
             self.nbAction += 1
             
