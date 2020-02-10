@@ -246,7 +246,7 @@ def getContacts(evol, runs1, runs2) :
         end = r[1]
         for i in range(len(runs2)) :
             s=runs2[i]
-            if s[0]<=end and s[1]>=start : #contact with r
+            if s[0]<end and s[1]>=start : #contact with r
                 l.append(i)
         res.append(l)
     return res
