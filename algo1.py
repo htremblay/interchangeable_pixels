@@ -246,7 +246,7 @@ def getContacts(evol, runs1, runs2) :
         end = r[1]
         for i in range(len(runs2)) :
             s=runs2[i]
-            if s[0]<end and s[1]>=start : #contact with r
+            if s[0]<end and s[1]>start : #contact with r
                 l.append(i)
         res.append(l)
     return res
@@ -320,8 +320,7 @@ def step2(evol,k) :
                     sinf = runs2[ind-1]
                     ssup = runs2[ind+1]
                     #we have here sinf, si, and ssup that are blocks that follow each other
-                    print("non fini")
-                    
+					
                     if si[0]-sinf[1] == 1 :
                         evol.addAction(k+1, si[0]-1, Direction.Down)
                         if evol.currentImage.isConnected(whiteMode=True) :#if no hole is created
@@ -414,16 +413,19 @@ def step3(evol, k) :
 def algo1(evol) :
     t1 = time.time()
     k = ksingular(evol.currentImage)
+    kp=0
+    kpp=0
     while k>0 :
         step2(evol, k)
         step3(evol, k)
-        kprime = ksingular(evol.currentImage)
-        if k==kprime :
+        kpp=kp
+        kp = k
+        k = ksingular(evol.currentImage)
+        if k==kpp :
             print("problem")
             evol.firstImage.show()
             evol.currentImage.show()
             break
-        k=kprime
     
     t2 = time.time()
     print("algo : %f s" % (t2-t1))

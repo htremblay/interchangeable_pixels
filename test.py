@@ -26,12 +26,12 @@ imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,1,0,0,0,0,0],
+			 [0,0,0,1,0,1,1,0,0,0,0,0],
+			 [0,0,0,1,1,0,1,1,1,1,0,0],
+			 [0,0,0,0,1,1,1,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
-			 [0,0,0,0,0,0,1,0,0,0,1,0],
-			 [1,1,1,1,1,1,1,1,1,1,1,0],
-			 [1,1,0,0,1,1,0,0,1,0,0,0],
-			 [0,0,0,1,0,1,0,1,1,0,0,0],
-			 [0,0,0,1,1,1,0,1,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0]]
 """
 
@@ -98,10 +98,11 @@ imageTest = [[0,0,0,0,0,0,0,0],
 			 [0,0,1,0,1,1,1,0]]
 """
 
-#image = BinImage.BinImage(imageTest, False, True)
-
 """
-image = generation.randomImage(100)
+#image = BinImage.BinImage(imageTest, False, True)
+image = generation.randomImage(25)
+
+
 evol = Evolution.Evolution(image)
 image.show()
 
@@ -113,8 +114,8 @@ print(evol.getNbActions())
 
 """
 
-nbIter = 1
-ns = [5,10,20,35, 50, 75]
+nbIter = 5
+ns = [5,10,20,30,50,65,80]
 value = []
 
 for n in ns :
@@ -130,7 +131,11 @@ for n in ns :
 	value.append(sum(listOfValues) / nbIter)
 
 plt.figure()
+
+plt.xlabel('nb of pixels')
+plt.ylabel('nb of exchanges')
+plt.title('complexity of the first algorithm') 
+
 plt.plot(ns, value)
 plt.show()
-
 

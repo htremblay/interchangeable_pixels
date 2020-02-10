@@ -10,12 +10,12 @@ from math import sqrt
 import BinImage
 
 def randomImage(n) :
-	height = (int) (n+2*sqrt(2*n/3.14)+3)
-	width = (int) (2*sqrt(2*n/3.14)+6)
+	height = (int) (n+2*sqrt(n)+3)
+	width = (int) (2*sqrt(n)+6)
 	im = []
 	for i in range(height) :
 		im.append([0]*width)
-	im[(int)(n+sqrt(2*n/3.14))][width//2]=1
+	im[(int)(n+sqrt(n))][width//2]=1
 	image = BinImage.BinImage(im, False, True)
 	i=0
 	while i<n-1 :
