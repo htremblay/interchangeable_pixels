@@ -237,6 +237,6 @@ class BinImage :
                         waiting.append(neighbour)
                         notVisited.remove(neighbour)
             visited.append(pix)
-        return (len(notVisited)==0)
+        return (len(notVisited)==0), notVisited
 
 

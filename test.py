@@ -9,15 +9,38 @@ from algo1 import ksingular, combineTowers, getBlocks, getTowers, towerize, getC
 import BinImage
 import Evolution
 import generation
+import time
 
+
+imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
+			 
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0],
+			 [0,0,0,0,0,0,1,0,0,0,1,0],
+			 [1,1,1,1,1,1,1,1,1,1,1,0],
+			 [1,1,0,0,1,1,0,0,1,0,0,0],
+			 [0,0,0,1,0,1,0,1,1,0,0,0],
+			 [0,0,0,1,1,1,0,1,0,0,0,0],
+			 [0,0,0,0,0,0,0,0,0,0,0,0]]
+"""
 
 imageTest = [[0,0,0,0,0],
-			 [0,1,1,0,0],
+			 [0,1,1,1,0],
 			 [0,1,0,1,0],
 			 [0,1,1,1,0],
 			 [0,0,0,0,0],]
 
-"""
+
 imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -75,14 +98,16 @@ imageTest = [[0,0,0,0,0,0,0,0],
 """
 
 #image = BinImage.BinImage(imageTest, False, True)
-image = generation.randomImage(50)
+
+image = generation.randomImage(20)
 evol = Evolution.Evolution(image)
 image.show()
 
+algo1(evol)
 
-#algo1(evol, "random.gif", 100)
+print(evol.getNbActions())
 
-#print(evol.getNbActions())
+evol.createGif("part1Random.gif", 150)
 
 
 
