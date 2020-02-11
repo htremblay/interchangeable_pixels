@@ -127,6 +127,13 @@ class BinImage :
                 l.append(p2)
         return l
         
+    def get8Neighbours(self, p) :
+        l = []
+        for direction in range(0,8) :
+            p2 = self.getNeighbourCoord(p[0], p[1], direction)
+            if p2[0]>=0 and p2[0]<self.n and p2[1]>=0 and p2[1]<self.m :
+                l.append(self.getPixel(p2[0], p2[1]))
+        return l
         
     def getDirection(p1, p2) :
         """gives the direction to go to p2 from p1"""

@@ -320,10 +320,11 @@ def step2(evol,k) :
                     sinf = runs2[ind-1]
                     ssup = runs2[ind+1]
                     #we have here sinf, si, and ssup that are blocks that follow each other
-					
+                    
                     if si[0]-sinf[1] == 1 :
                         evol.addAction(k+1, si[0]-1, Direction.Down)
-                        if evol.currentImage.isConnected(whiteMode=True) :#if no hole is created
+                        connected,_ = evol.currentImage.isConnected(whiteMode=True)
+                        if connected :#if no hole is created
                             moveRowOnTower(evol, k+1, si[0], si[1]-2, towerPos)
                             if contactsR[0] != ind-1 :
                                 moveRowOnTower(evol, k+1, sinf[1]-1, sinf[0]+1, towerPos, -1)
@@ -334,7 +335,8 @@ def step2(evol,k) :
                             
                     elif ssup[0]-si[1] == 1 :
                         evol.addAction(k+1, si[1], Direction.Down)
-                        if evol.currentImage.isConnected(whiteMode=True) : #if no hole is created
+                        connected,_ = evol.currentImage.isConnected(whiteMode=True)
+                        if connected : #if no hole is created
                             if contactsR[-1] != ind+1 :
                                 moveRowOnTower(evol, k+1, ssup[0], ssup[1]-2, towerPos)
                             evol.addAction(k+1, si[1]-1, Direction.UpLeft)

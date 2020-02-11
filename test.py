@@ -4,7 +4,7 @@ Created on Fri Nov  1 15:11:40 2019
 
 @author: nbarl
 """
-
+#%% imports
 from algo1 import ksingular, combineTowers, getBlocks, getTowers, towerize, getContacts, step2, step3, algo1
 import BinImage
 import Evolution
@@ -12,10 +12,8 @@ import generation
 import time
 import matplotlib.pyplot as plt
 
-
+#%% definitions
 imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
-			 
-			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -27,9 +25,10 @@ imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,1,0,0,0,0,0],
-			 [0,0,0,1,0,1,1,0,0,0,0,0],
-			 [0,0,0,1,1,0,1,1,1,1,0,0],
-			 [0,0,0,0,1,1,1,0,0,0,0,0],
+			 [0,0,0,0,0,1,1,1,0,0,0,0],
+			 [0,0,0,0,0,1,1,1,1,0,0,0],
+			 [0,0,0,0,0,1,0,1,1,1,0,0],
+			 [0,0,0,0,0,1,1,1,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0]]
@@ -97,22 +96,26 @@ imageTest = [[0,0,0,0,0,0,0,0],
 			 [1,1,1,1,1,1,0,0],
 			 [0,0,1,0,1,1,1,0]]
 """
+# %% application classique
 
 """
-#image = BinImage.BinImage(imageTest, False, True)
-image = generation.randomImage(25)
+image = BinImage.BinImage(imageTest, False, True)
+#☺image = generation.randomImage(25)
 
 
-evol = Evolution.Evolution(image)
+#evol = Evolution.Evolution(image)
 image.show()
+print(image.isConnected(True))
 
-algo1(evol)
+#algo1(evol)
 
-print(evol.getNbActions())
+#print(evol.getNbActions())
 
 #evol.createGif("part1Random.gif", 100)
 
 """
+
+#%% analyse complexité
 
 nbIter = 5
 ns = [5,10,20,30,50,65,80]
@@ -139,3 +142,11 @@ plt.title('complexity of the first algorithm')
 plt.plot(ns, value)
 plt.show()
 
+
+# %% test génération
+"""
+t = time.time()
+image = generation.randomImage(50)
+print ("temps de génération : ", time.time()-t)
+image.show()
+"""

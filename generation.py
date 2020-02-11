@@ -9,6 +9,17 @@ import random
 from math import sqrt
 import BinImage
 
+def separated(l) :
+	change = 0
+	lastVal = l[0]
+	for x in l[1:] :
+		if x!=lastVal :
+			change += 1
+			lastVal = x
+			if change > 2 :
+				return False
+	return True
+
 def randomImage(n) :
 	height = (int) (n+2*sqrt(n)+3)
 	width = (int) (2*sqrt(n)+6)
@@ -17,14 +28,26 @@ def randomImage(n) :
 		im.append([0]*width)
 	im[(int)(n+sqrt(n))][width//2]=1
 	image = BinImage.BinImage(im, False, True)
-	i=0
-	while i<n-1 :
-		contour = image.getContour()
+	
+	generateContour = True
+	i=1
+	while i<n :
+		if generateContour :
+			contour = image.getContour()
+			generateContour = False
 		newPix = random.choice(contour)
 		image.addPixel(newPix)
-		if image.isConnected(whiteMode = True) :
+		
+		if separated(image.get8Neighbours(newPix)) :
+			connected = True
+		else :
+			connected, _ = image.isConnected(whiteMode = True)
+		
+		if connected :
 			i+=1
+			generateContour = True
 		else :
 			image.removePixel(newPix)
+			contour.remove(newPix)
 			
 	return image
