@@ -149,6 +149,8 @@ class BinImage :
                 return Direction.Right
             elif p1[1]>p2[1] :
                 return Direction.Left
+            else :
+                return None
         else :
             if p1[1]<p2[1] :
                 return Direction.UpRight

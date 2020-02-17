@@ -17,21 +17,17 @@ class Evolution :
         self.firstImage = deepcopy(image)
         self.currentImage = image
         self.actions = []
-        self.nbAction = 0
         for x in self.actions :
             self.currentImage.movePixel(x)
-            self.nbAction += 1
             
     def addAction(self, i, j, direction) :
         self.actions.append((i,j,direction))
         self.currentImage.movePixel((i,j,direction))
-        self.nbAction += 1
         
     def popAction(self) :
-        if self.nbAction > 0 :
+        if len(self.actions) > 0 :
             act = self.actions.pop()
             self.currentImage.movePixel(act)
-            self.nbAction -=1
             
     def createGif(self, name = 'dynamic_images.gif', speed = 500) :
         image = deepcopy(self.firstImage)
@@ -53,33 +49,39 @@ class Evolution :
     def simplify(self) :
         if len(self.actions)==0 :
             return
-        newList = [self.actions[0]]
-        i = 1
+        newList = []
+        i = 0
         while i<len(self.actions) :
-            lastAction = newList[-1]
             currentAction = self.actions[i]
-            lastExchange = ( (lastAction[0],lastAction[1]) , self.currentImage.getNeighbourCoord(lastAction[0],lastAction[1],lastAction[2]) )
-            currentExchange = ( (currentAction[0],currentAction[1]) , self.currentImage.getNeighbourCoord(currentAction[0],currentAction[1],currentAction[2]) )
-            
-            b1=-1
-            if lastExchange[1]==currentExchange[0] :
-               b1=0
-               b2=1
-            elif lastExchange[0]==currentExchange[0] :
-                b1=1
-                b2=1
-            elif lastExchange[1]==currentExchange[1] :
-                b1=0
-                b2=0
-            elif lastExchange[0]==currentExchange[1] :
-                b1=1
-                b2=0
-                
-            if b1!=-1 and Evolution.dist(lastExchange[b1], currentExchange[b2])<=sqrt(2) :
-                newList.pop()
-                newList.append((lastExchange[b1][0], lastExchange[b1][1], BinImage.getDirection(lastExchange[b1], currentExchange[b2])))
-            else :
+            if len(newList)==0 :
                 newList.append(currentAction)
+            else :
+                lastAction = newList[-1]
+                
+                lastExchange = ( (lastAction[0],lastAction[1]) , self.currentImage.getNeighbourCoord(lastAction[0],lastAction[1],lastAction[2]) )
+                currentExchange = ( (currentAction[0],currentAction[1]) , self.currentImage.getNeighbourCoord(currentAction[0],currentAction[1],currentAction[2]) )
+                
+                b1=-1
+                if lastExchange[1]==currentExchange[0] :
+                   b1=0
+                   b2=1
+                elif lastExchange[0]==currentExchange[0] :
+                    b1=1
+                    b2=1
+                elif lastExchange[1]==currentExchange[1] :
+                    b1=0
+                    b2=0
+                elif lastExchange[0]==currentExchange[1] :
+                    b1=1
+                    b2=0
+                    
+                if b1!=-1 and Evolution.dist(lastExchange[b1], currentExchange[b2])<=sqrt(2) :
+                    newList.pop()
+                    newDir = BinImage.getDirection(lastExchange[b1], currentExchange[b2])
+                    if newDir!=None :
+                        self.actions.insert(i+1, (lastExchange[b1][0], lastExchange[b1][1], newDir))
+                else :
+                    newList.append(currentAction)
             i+=1
         self.actions = newList
         

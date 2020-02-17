@@ -13,6 +13,7 @@ import time
 import matplotlib.pyplot as plt
 
 #%% definitions
+"""
 imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -35,12 +36,12 @@ imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 """
 
 imageTest = [[0,0,0,0,0],
-			 [0,1,1,1,0],
+			 [0,1,1,0,0],
 			 [0,1,0,1,0],
 			 [0,1,1,1,0],
 			 [0,0,0,0,0],]
 
-
+"""
 imageTest = [[0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
 			 [0,0,0,0,0,0,0,0,0,0,0,0],
@@ -97,28 +98,26 @@ imageTest = [[0,0,0,0,0,0,0,0],
 			 [0,0,1,0,1,1,1,0]]
 """
 # %% application classique
-
 """
-image = BinImage.BinImage(imageTest, False, True)
-#☺image = generation.randomImage(25)
 
-
-#evol = Evolution.Evolution(image)
+#image = BinImage.BinImage(imageTest, False, True)
+image = generation.randomImage(20)
 image.show()
-print(image.isConnected(True))
 
-#algo1(evol)
+evol = Evolution.Evolution(image)
+
+evol.simplify()
+
+algo1(evol)
 
 #print(evol.getNbActions())
 
-#evol.createGif("part1Random.gif", 100)
 
 """
-
 #%% analyse complexité
 
-nbIter = 5
-ns = [5,10,20,30,50,65,80]
+nbIter = 3
+ns = [5,10,20,30,50,65]
 value = []
 
 for n in ns :
@@ -130,7 +129,7 @@ for n in ns :
 		print("solving")
 		algo1(evol)
 		listOfValues.append(evol.getNbActions())
-		print(n, " pixels : ", evol.getNbActions(), " actions.")
+		print(n, " pixels : ", evol.getNbActions(), " actions.\n")
 	value.append(sum(listOfValues) / nbIter)
 
 plt.figure()

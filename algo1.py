@@ -431,7 +431,7 @@ def algo1(evol) :
     
     t2 = time.time()
     print("algo : %f s" % (t2-t1))
-    
+
     evol.simplify()
     t3 = time.time()
     print("simplify : %f s" % (t3-t2))
