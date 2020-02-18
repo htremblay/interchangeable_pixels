@@ -149,3 +149,5 @@ image = generation.randomImage(50)
 print ("temps de génération : ", time.time()-t)
 image.show()
 """
+
+#implémentation B4W8 et ges graphes sous-jacent. Puis Faire des tests et comparer.
