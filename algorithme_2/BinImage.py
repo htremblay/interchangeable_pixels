@@ -43,6 +43,10 @@ class BinImage :
         for i in range(self.n) :
             for j in range(self.m) :
                 pixColor = self.getPixel(i,j)
+                if pixColor==0 :
+                    self.whiteGraph.add_node((i,j))
+                else :
+                    self.blackGraph.add_node((i,j))
                 mode = self.white
                 if pixColor==1 :
                     mode = self.black
@@ -225,11 +229,27 @@ class BinImage :
 
     def addPixel(self, p) :
         """add a black pixel"""
-        self.image[p[0]][p[1]] = 1
+        i = p[0]
+        j = p[1]
+        if self.getPixel(i,j) == 0 :
+            self.image[i][j] = 1
+            self.whiteGraph.remove_node(p)
+            for nei in self.getNeighbours(p) :
+                if self.getPixel(*nei)==1 :
+                    self.blackGraph.add_edge(p,nei)
+            
+        
 
     def removePixel(self, p) :
         """removes a black pixel"""
-        self.image[p[0]][p[1]] = 0
+        i = p[0]
+        j = p[1]
+        if self.getPixel(i,j) == 1 :
+            self.image[i][j] = 0
+            self.blackGraph.remove_node(p)
+            for nei in self.getNeighbours(p) :
+                if self.getPixel(*nei)==0 :
+                    self.whiteGraph.add_edge(p,nei)
 
 
     def getWhitePixels(self) :
@@ -253,22 +273,8 @@ class BinImage :
     def isConnected(self, whiteMode=False) :
         """check if the image is connect"""
         if whiteMode :
-            notVisited = self.getWhitePixels()
-            color = 0
+            return nx.is_connected(self.whiteGraph)
         else :
-            notVisited = self.getBlackPixels()
-            color = 1
-
-        waiting = [notVisited.pop()]
-        visited = []
-        while len(waiting)>0 :
-            pix = waiting.pop()
-            for neighbour in self.getNeighbours(pix) :
-                if self.getPixel(neighbour[0], neighbour[1])==color :
-                    if neighbour in notVisited :
-                        waiting.append(neighbour)
-                        notVisited.remove(neighbour)
-            visited.append(pix)
-        return (len(notVisited)==0), notVisited
+            return nx.is_connected(self.blackGraph)
 
 

@@ -11,15 +11,16 @@ from BinImage import BinImage
 
 
 
-image_test = [[0,0,0],
+image_test = [[0,0,1],
 			  [1,1,0],
 			  [1,0,0]]
 
 
 im = BinImage(image_test, False, True)
 
-print(list(im.blackGraph.edges))
-print(list(im.whiteGraph.edges))
+
+print(im.isConnected(True))
+print(im.isConnected(False))
 
 
 """
