@@ -31,6 +31,7 @@ class BinImage :
         self.m = len(image[0])
         self.black = black
         self.white = white
+        self.origin = self.findOrigin()
         self.nbPixel = 0
         for i in range(self.n) :
             for j in range(self.m) :
@@ -60,6 +61,12 @@ class BinImage :
                     except IndexError :
                         pass
 
+    def findOrigin(self) :
+        for j in range(self.m) :
+            for i in range(self.n-1,-1,-1) :
+                if self.getPixel(i,j)==1 :
+                    return (i,j)
+    
     def __iter__(self) :
         for i in range(self.n) :
             for j in range(self.m) :
@@ -232,6 +239,7 @@ class BinImage :
         i = p[0]
         j = p[1]
         if self.getPixel(i,j) == 0 :
+            self.nbPixel+=1
             self.image[i][j] = 1
             self.whiteGraph.remove_node(p)
             for nei in self.getNeighbours(p) :
@@ -245,6 +253,7 @@ class BinImage :
         i = p[0]
         j = p[1]
         if self.getPixel(i,j) == 1 :
+            self.nbPixel-=1
             self.image[i][j] = 0
             self.blackGraph.remove_node(p)
             for nei in self.getNeighbours(p) :
@@ -277,4 +286,18 @@ class BinImage :
         else :
             return nx.is_connected(self.blackGraph)
 
+    def pixelPotential(self, i, j) :
+        k=2
+        if self.black :
+            if self.white :
+                k=1
+            else :
+                k=4
+        return (j-self.origin[1]) + (k+1)*(self.nbPixel+i-self.origin[0])
+    
+    def potential(self) :
+        acc = 0
+        for p in self.blackIterator() :
+            acc += self.pixelPotential(*p)
+        return acc
 

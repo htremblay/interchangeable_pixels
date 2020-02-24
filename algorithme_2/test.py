@@ -6,21 +6,24 @@ Created on Tue Feb 18 15:11:51 2020
 """
 
 import networkx as nx
-from BinImage import BinImage
+import BinImage
 
 
 
 
-image_test = [[0,0,1],
-			  [1,1,0],
-			  [1,0,0]]
+image_test = [[0,0,0],
+			  [0,1,1],
+			  [0,0,1]]
 
 
-im = BinImage(image_test, False, True)
+im = BinImage.BinImage(image_test, False, True)
 
 
-print(im.isConnected(True))
-print(im.isConnected(False))
+print(im.findOrigin())
+print(im.pixelPotential(1,1))
+print(im.pixelPotential(1,2))
+print(im.pixelPotential(2,2))
+print(im.potential())
 
 
 """
@@ -35,3 +38,4 @@ G.add_edge((0,1),(1,1))
 
 print(list(nx.articulation_points(G)))
 """
+
