@@ -39,6 +39,7 @@ class BinImage :
         self.whiteGraph = nx.Graph()
         self.blackGraph = nx.Graph()
         self.graphInit()
+        self.computeLayout()
 
     def graphInit(self) :
         for i in range(self.n) :
@@ -201,7 +202,13 @@ class BinImage :
         a,b = self.getNeighbourCoord(i,j,direction)
         if self.image[i][j] == self.image[a][b] :
             print("Warning : interchange between 2 pixels with the same color")
-        self.image[i][j], self.image[a][b] = self.image[a][b], self.image[i][j]
+        else :
+            if self.image[i][j]==1 :
+                self.addPixel((a,b))
+                self.removePixel((i,j))
+            else :
+                self.addPixel((i,j))
+                self.removePixel((a,b))
         #self.show()
 
 
@@ -287,17 +294,31 @@ class BinImage :
             return nx.is_connected(self.blackGraph)
 
     def pixelPotential(self, i, j) :
+        x,y = self.realPosition(i,j)
         k=2
         if self.black :
             if self.white :
                 k=1
             else :
                 k=4
-        return (j-self.origin[1]) + (k+1)*(self.nbPixel+i-self.origin[0])
+        return x + (k+1)*(self.nbPixel-y)
     
     def potential(self) :
         acc = 0
         for p in self.blackIterator() :
             acc += self.pixelPotential(*p)
         return acc
-
+    
+    def realPosition(self,i,j) :
+        return ((j-self.origin[1]),(self.origin[0]-i))
+    
+    def computeLayout(self) :
+        self.layoutDictionary = {}
+        for i in range(self.n):
+            for j in range(self.m) :
+                self.layoutDictionary[(i,j)] = self.realPosition(i,j)
+    
+    def drawGraphs(self) :
+        nx.draw_networkx(self.whiteGraph, with_labels=False, pos=self.layoutDictionary, edgecolors='k', node_color='w', node_size=600)
+        nx.draw_networkx(self.blackGraph, with_labels=False, pos=self.layoutDictionary, node_color='k', node_size=600)
+        
