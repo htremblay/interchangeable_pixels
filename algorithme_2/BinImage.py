@@ -31,7 +31,7 @@ class BinImage :
         self.m = len(image[0])
         self.black = black
         self.white = white
-        self.origin = self.findOrigin()
+        self.findOrigin()
         self.nbPixel = 0
         for i in range(self.n) :
             for j in range(self.m) :
@@ -66,6 +66,7 @@ class BinImage :
         for j in range(self.m) :
             for i in range(self.n-1,-1,-1) :
                 if self.getPixel(i,j)==1 :
+                    self.origin = (i,j)
                     return (i,j)
     
     def __iter__(self) :
@@ -319,6 +320,6 @@ class BinImage :
                 self.layoutDictionary[(i,j)] = self.realPosition(i,j)
     
     def drawGraphs(self) :
-        nx.draw_networkx(self.whiteGraph, with_labels=False, pos=self.layoutDictionary, edgecolors='k', node_color='w', node_size=600)
-        nx.draw_networkx(self.blackGraph, with_labels=False, pos=self.layoutDictionary, node_color='k', node_size=600)
+        nx.draw_networkx(self.whiteGraph, with_labels=False, pos=self.layoutDictionary, edgecolors='k', node_color='w', node_size=300)
+        nx.draw_networkx(self.blackGraph, with_labels=False, pos=self.layoutDictionary, node_marker='.', node_color='k', node_size=300)
         

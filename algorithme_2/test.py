@@ -8,6 +8,7 @@ Created on Tue Feb 18 15:11:51 2020
 import networkx as nx
 import BinImage
 from generation import randomImage
+from algo2 import findP
 
 
 
@@ -17,12 +18,12 @@ image_test = [[0,0,0],
 			  [0,0,1]]
 
 
-im = BinImage.BinImage(image_test, False, True)
-#im = randomImage(10)
+#im = BinImage.BinImage(image_test, False, True)
+im = randomImage(7)
 
-print(im.layoutDictionary)
+print(im)
+print(findP(im))
 
-im.drawGraphs()
 """
 G = nx.Graph()
 
@@ -35,3 +36,5 @@ G.add_edge((0,1),(1,1))
 
 print(list(nx.articulation_points(G)))
 """
+
+
