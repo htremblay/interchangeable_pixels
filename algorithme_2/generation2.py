@@ -7,7 +7,7 @@ Created on Tue Jan 28 14:59:26 2020
 
 import random
 from math import sqrt
-import BinImage
+import BinImage2
 
 def separated(l) :
 	change = 0
@@ -27,7 +27,7 @@ def randomImage(n) :
 	for i in range(height) :
 		im.append([0]*width)
 	im[(int)(n+sqrt(n))][width//2]=1
-	image = BinImage.BinImage(im, False, True)
+	image = BinImage2.BinImage(im, False, True)
 	
 	generateContour = True
 	i=1
@@ -41,7 +41,7 @@ def randomImage(n) :
 		if separated(image.get8Neighbours(newPix)) :
 			connected = True
 		else :
-			connected= image.isConnected(True)
+			connected = image.isConnected(True)
 		
 		if connected :
 			i+=1

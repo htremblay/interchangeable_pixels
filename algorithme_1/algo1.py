@@ -413,7 +413,6 @@ def step3(evol, k) :
     
 
 def algo1(evol) :
-    t1 = time.time()
     k = ksingular(evol.currentImage)
     kp=0
     kpp=0
@@ -428,11 +427,5 @@ def algo1(evol) :
             evol.firstImage.show()
             evol.currentImage.show()
             break
-    
-    t2 = time.time()
-    print("algo : %f s" % (t2-t1))
-
     evol.simplify()
-    t3 = time.time()
-    print("simplify : %f s" % (t3-t2))
     

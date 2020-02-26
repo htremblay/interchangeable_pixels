@@ -5,7 +5,7 @@ Created on Wed Nov  6 08:19:16 2019
 @author: nbarl
 """
 from math import sqrt
-from BinImage import BinImage
+from BinImage2 import BinImage
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from copy import deepcopy
