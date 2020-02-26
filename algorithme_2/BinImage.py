@@ -139,6 +139,15 @@ class BinImage :
             i+=1
             j+=1
         return i,j
+    
+    def N(self, p) :
+        return self.getNeighbourCoord(*p,Direction.Up)
+    def E(self, p) :
+        return self.getNeighbourCoord(*p,Direction.Right)
+    def S(self, p) :
+        return self.getNeighbourCoord(*p,Direction.Down)
+    def W(self, p) :
+        return self.getNeighbourCoord(*p,Direction.Left)
 
     def getNeighbour(self, p, direction) :
         """return the value  of the neighbour of (i,j), according
@@ -210,7 +219,6 @@ class BinImage :
             else :
                 self.addPixel((i,j))
                 self.removePixel((a,b))
-        #self.show()
 
 
     def show(self) :
@@ -322,4 +330,24 @@ class BinImage :
     def drawGraphs(self) :
         nx.draw_networkx(self.whiteGraph, with_labels=False, pos=self.layoutDictionary, edgecolors='k', node_color='w', node_size=300)
         nx.draw_networkx(self.blackGraph, with_labels=False, pos=self.layoutDictionary, node_marker='.', node_color='k', node_size=300)
-        
+
+    def isCutVertex(self, p) :
+        if self.getPixel(*p)==1 :
+            self.removePixel(p)
+            res = self.isConnected()
+            self.addPixel(p)
+        else :
+            self.addPixel(p)
+            res = self.isConnected(True)
+            self.removePixel(p)
+        return not res
+    
+    def isVertical(self) :
+        c = -1
+        for p in self.blackIterator() :
+            if c<0 :
+                c = p[1]
+            else :
+                if c!=p[1] :
+                    return False
+        return True

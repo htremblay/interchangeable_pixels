@@ -5,36 +5,25 @@ Created on Tue Feb 18 15:11:51 2020
 @author: nbarl
 """
 
-import networkx as nx
 import BinImage
+import Evolution
 from generation import randomImage
-from algo2 import findP
+from algo2 import findP, B4W8kinterchange, algoB4W8
 
 
 
 
-image_test = [[0,0,0],
-			  [0,1,1],
-			  [0,0,1]]
+
+image_test = [[0,0,0,0],
+			  [0,0,0,0],
+			  [0,1,1,0]]
 
 
 #im = BinImage.BinImage(image_test, False, True)
-im = randomImage(7)
+im = randomImage(40)
+evol = Evolution.Evolution(im)
 
-print(im)
-print(findP(im))
+algoB4W8(evol)
 
-"""
-G = nx.Graph()
-
-G.add_edge((0,0),(0,1))
-G.add_edge((0,0),(1,0))
-G.add_edge((1,0),(1,1))
-G.add_edge((0,1),(1,1))
-
-#G.remove_node((1,0))
-
-print(list(nx.articulation_points(G)))
-"""
-
-
+evol.createGif("B4W8.gif", 100)
+print(evol.getNbActions())

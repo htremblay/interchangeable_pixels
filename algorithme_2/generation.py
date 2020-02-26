@@ -41,7 +41,7 @@ def randomImage(n) :
 		if separated(image.get8Neighbours(newPix)) :
 			connected = True
 		else :
-			connected, _ = image.isConnected(whiteMode = True)
+			connected= image.isConnected(True)
 		
 		if connected :
 			i+=1
