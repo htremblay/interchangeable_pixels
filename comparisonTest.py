@@ -5,6 +5,7 @@ Created on Wed Feb 26 11:29:41 2020
 @author: nbarl
 """
 import time
+import matplotlib.pyplot as plt
 
 import sys
 sys.path.append('algorithme_1/')
@@ -18,12 +19,11 @@ import Evolution2 as Evol2
 import algo1
 import algo2
 
-n=150
 
-#generte the BinImages from the same random image
 
 def compare(n) :
 	t = time.time()
+	#generte the BinImages from the same random image
 	im2 = gen2.randomImage(n)
 	im1 = Image1.BinImage(deepcopy(im2.image), False, True)
 	
@@ -31,7 +31,7 @@ def compare(n) :
 	evol2 = Evol2.Evolution(im2)
 	
 	t1 = time.time()
-	print("generation of an image with ",n," pixels : ", t1-t, " seconds")
+	print("\ngeneration of an image with ",n," pixels : ", t1-t, " seconds")
 	
 	algo1.algo1(evol1)
 	t2 = time.time()
@@ -43,3 +43,34 @@ def compare(n) :
 	print("                   ", (evol2.getNbActions()), " actions")
 	
 	return (evol1.getNbActions(), evol2.getNbActions())
+
+
+
+
+
+nbIter = 4
+ns = [5,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150]
+
+value1 = []
+value2 = []
+
+for n in ns :
+	listOfValues1 = []
+	listOfValues2 = []
+	for i in range(nbIter) :
+		v1,v2 = compare(n)
+		listOfValues1.append(v1)
+		listOfValues2.append(v2)
+	value1.append(sum(listOfValues1) / nbIter)
+	value2.append(sum(listOfValues2) / nbIter)
+
+plt.figure()
+
+plt.xlabel('number of pixels')
+plt.ylabel('number of exchanges')
+plt.title('compared complexity of the algorithms') 
+
+plt.plot(ns, value1, label='1st algorithm')
+plt.plot(ns, value2, label='2nd algorithm')
+plt.legend(loc='upper left')
+plt.show()

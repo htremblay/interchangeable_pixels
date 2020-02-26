@@ -33,9 +33,13 @@ class BinImage :
         self.white = white
         self.findOrigin()
         self.nbPixel = 0
+        self.hmax=self.n
         for i in range(self.n) :
             for j in range(self.m) :
-                self.nbPixel+=image[i][j]
+                if image[i][j]==1 :
+                    self.nbPixel+=1
+                    if self.hmax<0 :
+                        self.hmax = i
         self.whiteGraph = nx.Graph()
         self.blackGraph = nx.Graph()
         self.graphInit()
@@ -255,6 +259,8 @@ class BinImage :
         i = p[0]
         j = p[1]
         if self.getPixel(i,j) == 0 :
+            if i<self.hmax :
+                self.hmax=i
             self.nbPixel+=1
             self.image[i][j] = 1
             self.whiteGraph.remove_node(p)
@@ -328,7 +334,12 @@ class BinImage :
                 self.layoutDictionary[(i,j)] = self.realPosition(i,j)
     
     def drawGraphs(self) :
+        plt.figure()
         nx.draw_networkx(self.whiteGraph, with_labels=False, pos=self.layoutDictionary, edgecolors='k', node_color='w', node_size=300)
+        nx.draw_networkx(self.blackGraph, with_labels=False, pos=self.layoutDictionary, node_marker='.', node_color='k', node_size=300)
+
+    def drawBlackGraph(self) :
+        plt.figure()
         nx.draw_networkx(self.blackGraph, with_labels=False, pos=self.layoutDictionary, node_marker='.', node_color='k', node_size=300)
 
     def isCutVertex(self, p) :
