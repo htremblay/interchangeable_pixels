@@ -49,7 +49,7 @@ def compare(n) :
 
 
 nbIter = 4
-ns = [5,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150]
+ns = [5,10,20,30,40]
 
 value1 = []
 value2 = []
@@ -65,12 +65,12 @@ for n in ns :
 	value2.append(sum(listOfValues2) / nbIter)
 
 plt.figure()
-
+plt.grid(True)
 plt.xlabel('number of pixels')
 plt.ylabel('number of exchanges')
 plt.title('compared complexity of the algorithms') 
 
-plt.plot(ns, value1, label='1st algorithm')
-plt.plot(ns, value2, label='2nd algorithm')
+plt.plot(ns, value1, label="Rosenfeld's algorithm", linewidth=3, marker='o', markerfacecolor='black', markersize=8)
+plt.plot(ns, value2, label="Bose's algorithm", linewidth=3, marker='o', markerfacecolor='black', markersize=8)
 plt.legend(loc='upper left')
 plt.show()
