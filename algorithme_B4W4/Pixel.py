@@ -20,3 +20,6 @@ class Pixel:
                 + "\nAnchor : " + str(self.anchor)
                 + "\nTop pixel : " + str(self.topPixel)
                 + "\nLead Elbow : " + str(self.leadElbow))
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y

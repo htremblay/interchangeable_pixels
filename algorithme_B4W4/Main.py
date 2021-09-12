@@ -2,14 +2,23 @@ import Pixel
 import BinaryImage
 
 
-imageTest = [[0,0,0,0,0],
-			 [0,0,0,1,0],
-			[0,0,0,0,0],
-			[0,0,0,0,0],
-			[0,0,0,0,0]]
+imageIsolatedWhite = [[1]]
+
+imageIsolatedBlack = [[0,0,0,0,0],
+					 [0,1,1,0,0],
+					 [0,1,0,0,1],
+					 [0,1,1,1,0],
+					 [0,0,0,0,0]]
+
+imageIsolatedBoth = [[1,0,0,0,0,0],
+					 [0,0,1,1,0,0],
+					 [0,0,1,0,1,0],
+					 [0,0,1,1,1,0],
+					 [0,1,0,1,0,1],
+					 [0,0,0,0,0,0],
+					 [0,0,0,0,0,1],]
 
 # for pixel in pixels:
 #     print(pixel)
-
-binaryImage = BinaryImage.BinaryImage(imageTest)
+binaryImage = BinaryImage.BinaryImage(imageIsolatedBoth)
 binaryImage.show_image()
