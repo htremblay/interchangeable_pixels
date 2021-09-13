@@ -3,6 +3,7 @@ from enum import Enum
 import math
 import random
 import Pixel
+from tqdm import tqdm
 
 
 # Enum for cardinal directions
@@ -20,23 +21,19 @@ class BinaryImage:
     # Constructor with a precreated image
     def __init__(self, param):
         if type(param) is list:
-            self.image = param[::-1]                                    # On inverse les éléments du tableau
-                                                                        # pour un affichage cohérent
+            self.image = param[::-1]                            # Reverse the elements of the array (better display)
         elif type(param) is int:
-            self.image = self.generate_random_B4W4img(param)
-        else:
-            print("Error in parameter, please enter an image or an int")
-            exit()
+            self.image = self.generate_random_B4W4img(param)    # If the param is an int, generating random image
+        else:                                                   # If the param is not an image or int, show error
+            raise ValueError("Error in parameter, please enter an image or an int")
 
-        self.height = len(self.image)                                   # Hauteur de l'image
-        self.width = len(self.image[0])                                 # Largeur de l'image
+        self.height = len(self.image)                                   # Height of the image
+        self.width = len(self.image[0])                                 # Width of the image
         self.arrayPixelsImage = self.create_pixel_array(self.image)     # From the image creating the pixels
 
         self.n = self.get_n()                                           # Get the number of black pixels on the image
         self.whitePixels = self.get_white_pixels()                      # Get all the white pixels
         self.blackPixels = self.get_black_pixels()                      # Get all the black pixels
-        print(len(self.blackPixels))
-        print("taille pixels", self.arrayPixelsImage)
         self.expand_image()                                             # If black pixels are adjacent to the limit
                                                                         # Expand the white pixels
 
@@ -46,8 +43,8 @@ class BinaryImage:
 
     # Return an image with n random black pixels that respect B4W4 connexity
     def generate_random_B4W4img(self, n):
-        self.height = n
-        self.width = n
+        self.height = 3     # We fix it to 3 because the image is gonna expand with the
+        self.width = 3      # creation of black pixels
         self.image = []
         for line in range(0, self.height):
             self.image.append([0]*self.width)
@@ -58,34 +55,41 @@ class BinaryImage:
         self.whitePixels = self.get_white_pixels()
 
         i = 1
+        tempList = self.blackPixels
+        pbar = tqdm(total=n)
         while i < n:
-            blackPixel = random.choice(self.blackPixels)
-            randomDirection = random.choice(list(Direction))
+            blackPixel = random.choice(tempList)
+            whiteNeighbours = self.get_4_white_neighbours(blackPixel)
             changeDone = False
 
-            if randomDirection == Direction.N:
-                changeDone = self.change_color_pixel(blackPixel.x + 1, blackPixel.y, True)
-            elif randomDirection == Direction.E:
-                changeDone = self.change_color_pixel(blackPixel.x, blackPixel.y+1, True)
-            elif randomDirection == Direction.S:
-                changeDone = self.change_color_pixel(blackPixel.x - 1, blackPixel.y, True)
-            elif randomDirection == Direction.W:
-                changeDone = self.change_color_pixel(blackPixel.x, blackPixel.y-1, True)
+            if whiteNeighbours:
+                randomWhitePixel = random.choice(whiteNeighbours)
+                changeDone = self.change_color_pixel(randomWhitePixel.x, randomWhitePixel.y, True)
 
             if changeDone:
+                tempList = self.get_black_pixels()
                 i += 1
+                pbar.set_description("Creating an image size n = " + str(n))
+                pbar.update(1)
+            else:
+                tempList.remove(blackPixel)
+
+        pbar.close()
 
         return self.image
 
+    # Change the color of a pixel with its coordinates
+    # Return a boolean if the change was done
     def change_color_pixel(self, x, y, color=False):
         pixel = self.get_pixel(x, y)
-        tempColor = pixel.black
+        tempColor = not color
         colorInt = 1 if color else 0
         changeDone = False
 
         if not pixel.black == color:
             pixel.black = color
-            if self.is_image_connected_B4B4():
+            isConnected, isolatedWhite, isolatedBlack = self.is_image_connected_B4B4()
+            if isConnected:
                 self.image[pixel.x][pixel.y] = colorInt
                 self.blackPixels.append(pixel)
                 self.expand_image()
@@ -100,7 +104,6 @@ class BinaryImage:
     def expand_image(self):
         for pixel in self.blackPixels:
             if pixel.x == self.height - 1:
-                print("passe x == max hauteur -1")
                 temp = []
                 for i in range(0, self.width):
                     temp.append(0)
@@ -109,7 +112,6 @@ class BinaryImage:
                 self.height += 1
 
             if pixel.x == 0:
-                print("passe x == 0")
                 temp = []
                 for i in range(0, self.width):
                     temp.append(0)
@@ -119,19 +121,14 @@ class BinaryImage:
                 self.height += 1
 
             if pixel.y == self.width - 1:
-                print("Passage ici")
                 for i in range(0, self.height):
                     self.image[i].append(0)
 
                 self.width += 1
 
             if pixel.y == 0:
-                print(self.image)
                 for i in range(0, self.height):
-                    print("i = ", i)
                     self.image[i].insert(0, 0)
-
-                print(self.image)
                 self.shift_pixels(Direction.E)
                 self.width += 1
 
@@ -196,6 +193,26 @@ class BinaryImage:
             temp.append(self.get_pixel(pixel.x - 1, pixel.y))
         if pixel.y - 1 >= 0:
             temp.append(self.get_pixel(pixel.x, pixel.y - 1))
+
+        return temp
+
+    # Rerturn a list of the 4_neighbours white pixels of a pixel
+    def get_4_white_neighbours(self, pixel):
+        neighbours = self.get_4_neighbours(pixel)
+        temp = []
+        for nb in neighbours:
+            if not nb.black:
+                temp.append(nb)
+
+        return temp
+
+    # Rerturn a list of the 4_neighbours black pixels of a pixel
+    def get_4_black_neighbours(self, pixel):
+        neighbours = self.get_4_neighbours(pixel)
+        temp = []
+        for nb in neighbours:
+            if nb.black:
+                temp.append(nb)
 
         return temp
 

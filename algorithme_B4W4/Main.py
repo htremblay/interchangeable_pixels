@@ -18,7 +18,10 @@ imageIsolatedBoth = [[1,0,0,0,0,0],
 					 [0,0,0,0,0,0],
 					 [0,0,0,0,0,1],]
 
-# for pixel in pixels:
-#     print(pixel)
-binaryImage = BinaryImage.BinaryImage(40)
-binaryImage.show_image()
+try:
+	binaryImage = BinaryImage.BinaryImage("600")
+	binaryImage.show_image()
+except Exception as e:
+	print(e)
+
+
