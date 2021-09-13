@@ -20,5 +20,5 @@ imageIsolatedBoth = [[1,0,0,0,0,0],
 
 # for pixel in pixels:
 #     print(pixel)
-binaryImage = BinaryImage.BinaryImage(imageIsolatedBoth)
+binaryImage = BinaryImage.BinaryImage(40)
 binaryImage.show_image()
