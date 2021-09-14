@@ -18,18 +18,20 @@ class Direction(Enum):
 # Class that'll handle all the image with its pixels.
 class BinaryImage:
 
-    # Constructor with a precreated image
-    def __init__(self, param):
+    # Constructor with a precreated image or a int to generate a random image
+    def __init__(self, param,):
         if type(param) is list:
-            self.image = param[::-1]                            # Reverse the elements of the array (better display)
-        elif type(param) is int:
-            self.image = self.generate_random_B4W4img(param)    # If the param is an int, generating random image
-        else:                                                   # If the param is not an image or int, show error
-            raise ValueError("Error in parameter, please enter an image or an int")
+            self.image = param[::-1]                                # Reverse the elements of the array (better display)
+        elif type(param) is int and param > 0:
+            self.borderWhitePixels = []
+            self.image = self.generate_random_B4W4img(param)  # If the param is an int, generating random image
+        else:                                                       # If the param is not an image or int, show error
+            raise ValueError("Error in parameter, please enter an image or an int > 0")
 
         self.height = len(self.image)                                   # Height of the image
         self.width = len(self.image[0])                                 # Width of the image
         self.arrayPixelsImage = self.create_pixel_array(self.image)     # From the image creating the pixels
+        self.borderWhitePixels = self.get_white_border_image()          # All the white pixels 4-adjacent to the image
 
         self.n = self.get_n()                                           # Get the number of black pixels on the image
         self.whitePixels = self.get_white_pixels()                      # Get all the white pixels
@@ -45,57 +47,69 @@ class BinaryImage:
     def generate_random_B4W4img(self, n):
         self.height = 3     # We fix it to 3 because the image is gonna expand with the
         self.width = 3      # creation of black pixels
-        self.image = []
-        for line in range(0, self.height):
+        self.image = []     # Create empty array
+
+        for line in range(0, self.height):      # Create a completly white image
             self.image.append([0]*self.width)
 
-        self.image[1][1] = 1
-        self.arrayPixelsImage = self.create_pixel_array(self.image)
-        self.blackPixels = self.get_black_pixels()
-        self.whitePixels = self.get_white_pixels()
+        self.image[1][1] = 1                        # Set the first middle pixel black
+        self.arrayPixelsImage = self.create_pixel_array(self.image) # Create array of pixels
+        self.blackPixels = self.get_black_pixels()  # Create array of black pixels
+        self.whitePixels = self.get_white_pixels()  # Create array of white pixels
 
-        i = 1
-        tempList = self.blackPixels
-        pbar = tqdm(total=n)
+        i = 1  # i = 1 because already 1 pixel on the image
+        self.borderWhitePixels = self.get_white_border_image()  # We create a temporary list
+        pbar = tqdm(total=n)  # progress bar in print
+        pbar.update(1)  # Adding the first pixel
+
         while i < n:
-            blackPixel = random.choice(tempList)
-            whiteNeighbours = self.get_4_white_neighbours(blackPixel)
-            changeDone = False
+            borderPixel = random.choice(self.borderWhitePixels)         # Chosing randomly a while pixel in the border
+            changeDone = self.change_color_pixel(borderPixel, True)     # Changing the white pixel to black
 
-            if whiteNeighbours:
-                randomWhitePixel = random.choice(whiteNeighbours)
-                changeDone = self.change_color_pixel(randomWhitePixel.x, randomWhitePixel.y, True)
+            if changeDone:                                              # If change has been done
+                self.borderWhitePixels = self.get_white_border_image()  # Temporary list takes the new black pixel
+                i += 1                                                  # +1 black pixel on the image
 
-            if changeDone:
-                tempList = self.get_black_pixels()
-                i += 1
-                pbar.set_description("Creating an image size n = " + str(n))
-                pbar.update(1)
+                pbar.set_description("Creating an image size n = " + str(n))  # Description for the loading bar
+                pbar.update(1)  # Value to update the loading bar (No impact on the algorithm)
             else:
-                tempList.remove(blackPixel)
+                self.borderWhitePixels.remove(borderPixel)  # Removing the black pixel of the list,
+                                                            # so we don't try to pick it again
 
-        pbar.close()
+        pbar.close()                                        # Closing the progress when finished
 
         return self.image
 
+    def get_white_border_image(self):
+        blackPixels = self.get_black_pixels()
+        whiteBorder = []
+        for blackPixel in blackPixels:
+            white_adjacent = self.get_4_white_neighbours(blackPixel)
+            for white_pixel in white_adjacent:
+                if white_pixel not in whiteBorder:
+                    whiteBorder.append(white_pixel)
+
+        return whiteBorder
+
     # Change the color of a pixel with its coordinates
     # Return a boolean if the change was done
-    def change_color_pixel(self, x, y, color=False):
-        pixel = self.get_pixel(x, y)
-        tempColor = not color
-        colorInt = 1 if color else 0
-        changeDone = False
+    def change_color_pixel(self, pixel, color=False):
+        currentColorPixel = pixel.black         # current color of pixel
+        colorInt = 1 if color else 0            # wanted color int
+        changeDone = False                      # True when the pixel changed its color
 
-        if not pixel.black == color:
-            pixel.black = color
-            isConnected, isolatedWhite, isolatedBlack = self.is_image_connected_B4B4()
+        if currentColorPixel != color:          # Current color needs to be different than the new one
+            pixel.black = color                 # Change the color of the pixel with the new one
+            isConnected, self.isolatedBlackPixels, self.isolatedWhitePixels = self.is_image_connected_B4B4()  # check B4W4 connexity
             if isConnected:
+                print("Connected really ? ", pixel)
                 self.image[pixel.x][pixel.y] = colorInt
-                self.blackPixels.append(pixel)
+                self.blackPixels = self.get_black_pixels()
+                self.whitePixels = self.get_white_pixels()
                 self.expand_image()
                 changeDone = True
             else:
-                pixel.black = tempColor
+                pixel.black = currentColorPixel
                 changeDone = False
 
         return changeDone
@@ -252,6 +266,9 @@ class BinaryImage:
                 pixel = Pixel.Pixel(line, column, True if img[line][column] == 1 else False)
                 if pixel not in self.arrayPixelsImage:
                     self.arrayPixelsImage.append(pixel)
+                elif pixel in self.arrayPixelsImage:
+                    idx = self.arrayPixelsImage.index(pixel)
+                    self.arrayPixelsImage[idx] = pixel
 
         self.arrayPixelsImage.sort(key=lambda k: [k.x, k.y])
 
@@ -281,8 +298,8 @@ class BinaryImage:
         return temp
 
     # Method that show the image at screen
-    def show_image(self):
-        plt.figure()
+    def show_image(self, arrayPixelToShow=None, i=0):
+        plt.figure(i)
         lineWidth = 1
 
         # Creation of the lines of the grid
@@ -304,6 +321,15 @@ class BinaryImage:
         # Filling the grid with isolated black pixels
         for pixel in self.isolatedBlackPixels:
             plt.gca().add_patch(plt.Rectangle((pixel.y, pixel.x), 1, 1, fc='green'))
+
+        # Filling the grid with isolated white pixels
+        for pixel in self.borderWhitePixels:
+            plt.gca().add_patch(plt.Rectangle((pixel.y, pixel.x), 1, 1, fc='cyan'))
+
+        # Filling the grid with pixels we want to show
+        if arrayPixelToShow:
+            for pixel in arrayPixelToShow:
+                plt.gca().add_patch(plt.Rectangle((pixel.y, pixel.x), 1, 1, fc='blue'))
 
         plt.axis('scaled')
         plt.show()

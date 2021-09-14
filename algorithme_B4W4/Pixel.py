@@ -19,7 +19,8 @@ class Pixel:
                 + "\nCut vertex : " + str(self.cutVertex)
                 + "\nAnchor : " + str(self.anchor)
                 + "\nTop pixel : " + str(self.topPixel)
-                + "\nLead Elbow : " + str(self.leadElbow))
+                + "\nLead Elbow : " + str(self.leadElbow)
+                + "\n")
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
