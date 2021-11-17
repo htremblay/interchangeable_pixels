@@ -182,7 +182,7 @@ class BinaryImage:
         if x * self.width + y < len(self.pixels):
             return self.pixels[x * self.width + y]
         else:
-            return None
+            return Pixel(x, y, PixelColor.WHITE)
 
     # Return a pixel with a direction
     def get_pixel_adjacent(self, pixel: Pixel, direction: Direction) -> Pixel or None:
@@ -251,17 +251,17 @@ class BinaryImage:
         return nodes
 
     # Return a boolean if the swap of 2 pixels is possible
-    def swap_pixels(self, p: Pixel, q: Pixel, swap_active=True) -> bool:
+    def swap_pixels(self, p: (int, int), q: (int, int), swap_active=True) -> bool:
         imgTemp = copy.copy(self)
         swap_pixel = False
 
         # We always want pTemp as the black pixel
-        if p.color == PixelColor.BLACK:
-            pTemp = imgTemp.get_pixel(p.x, p.y)
-            qTemp = imgTemp.get_pixel(q.x, q.y)
+        if imgTemp.get_pixel(p[0], p[1]).color == PixelColor.BLACK:
+            pTemp = imgTemp.get_pixel(p[0], p[1])
+            qTemp = imgTemp.get_pixel(q[0], q[1])
         else:
-            pTemp = imgTemp.get_pixel(q.x, q.y)
-            qTemp = imgTemp.get_pixel(p.x, p.y)
+            pTemp = imgTemp.get_pixel(q[0], q[1])
+            qTemp = imgTemp.get_pixel(p[0], p[1])
 
         if Pixel.is_adjacent(pTemp, qTemp, INTERCHANGE_CONNEXITY) and pTemp.color != qTemp.color:
             pTemp.color, qTemp.color = qTemp.color, pTemp.color
@@ -272,6 +272,8 @@ class BinaryImage:
 
             if connected:
                 if swap_active:
+                    p = self.get_pixel(pTemp.x, pTemp.y)
+                    q = self.get_pixel(qTemp.x, qTemp.y)
                     self.pixels[self.pixels.index(p)] = pTemp
                     self.pixels[self.pixels.index(q)] = qTemp
                     self.update_black_white([p, q])
@@ -286,7 +288,6 @@ class BinaryImage:
 
 
     def is_vertical(self):
-        bool = True
         y = self.black_pixels[0].y
         for p in self.black_pixels:
             if p.y != y:
@@ -295,7 +296,7 @@ class BinaryImage:
         return True
 
     # Use an array of tuple of Pixel to do multiple swap at once
-    def multiple_swap_pixels(self, array_swap: [(Pixel, Pixel)]) -> int or None:
+    def multiple_swap_pixels(self, array_swap: [((int, int), (int, int))]) -> int or None:
         interchange = 0
         pix_array_temp = copy.copy(self.pixels)
         for p, q in array_swap:
@@ -415,10 +416,10 @@ class BinaryImage:
                         pixel_to_remove.append(self.get_pixel(pixel.x, i))
                     height_temp -= 1
 
-                if pixel.x < min_x - 1:
-                    for i in range(0, self.width):
-                        pixel_to_remove.append(self.get_pixel(pixel.x, i))
-                    height_temp -= 1
+                # if pixel.x < min_x - 1:
+                #     for i in range(0, self.width):
+                #         pixel_to_remove.append(self.get_pixel(pixel.x, i))
+                #     height_temp -= 1
 
             if pixel not in pixel_to_remove:
                 if pixel.y > max_y + 1:
@@ -435,7 +436,7 @@ class BinaryImage:
         for pixel in pixel_to_remove:
             self.pixels.remove(pixel)
 
-        self.shift_pixels(Direction.S, min_x - 1)
+        # self.shift_pixels(Direction.S, min_x - 1)
         self.shift_pixels(Direction.W, min_y - 1)
 
         self.height = height_temp

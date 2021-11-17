@@ -142,8 +142,8 @@ class BinaryImageDisplayer:
         def update(i):
             p, q = array_interchage[i-1]
             image.swap_pixels(p, q)
-            image.expand_image()
-            image.reduce_image()
+            # image.expand_image()
+            # image.reduce_image()
             matrice.set_array(image.convert_pixels_to_img())
 
         ani = FuncAnimation(fig, update, frames=len(array_interchage) + 1, interval=speed)

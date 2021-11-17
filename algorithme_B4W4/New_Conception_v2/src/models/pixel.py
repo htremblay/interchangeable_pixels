@@ -38,3 +38,6 @@ class Pixel:
             return pow(self.x - pixel.x, 2) + pow(self.y - pixel.y, 2) <= 2
         else:
             raise ValueError("Error : invalid connexity!")
+
+    def get_coords(self):
+        return self.x, self.y

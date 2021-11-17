@@ -58,16 +58,15 @@ showKDiag_simple = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-showKDiag_case_not_cut = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 1, 1, 0, 0, 0, 0, 0, 0],
-                          [0, 1, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 1, 1, 1, 1, 0, 0, 0, 0],
-                          [0, 0, 0, 1, 0, 0, 1, 0, 0],
-                          [0, 0, 0, 1, 1, 1, 1, 0, 1],
-                          [0, 0, 0, 1, 0, 0, 0, 0, 1],
-                          [0, 0, 0, 1, 1, 1, 1, 1, 1],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+showKDiag_case_not_cut = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+                          [0, 0, 0, 1, 1, 1, 1, 0, 1, 0],
+                          [0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+                          [0, 0, 0, 1, 1, 1, 1, 1, 1, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
 showKDiag_case_cut = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 1, 1, 0, 0, 0, 0, 0, 0],
@@ -179,24 +178,27 @@ def main() -> int:
         binary_image_displayer.show(image=solver.imageElementsStart.binary_image,
                                     subtitle=key, custom_pixels_lists=custom_pixels_lists_1)
 
+
         # p = solver.imageElementsStart.binary_image.get_pixel(1, 4)
         # p = solver.imageElementsStart.binary_image.get_pixel(1, 8)
         # k, p_1 = solver.imageElementsStart.lemme_5(p)
-        # nb_echange = 0
+        #
+        # nb_echange = solver.imageElementsStart.k_diagonal_interchange(p, p_1)
+        # print(nb_echange)
+        nb_echange = 0
+        while True:
+            if solver.imageElementsStart.binary_image.is_vertical():
+                break
+            else:
+                temp = solver.imageElementsStart.lemme_6()
+                nb_echange += temp if temp is not None else 0
+                print("Nb echange = ", nb_echange)
 
-        # while True:
-        #     if solver.imageElementsStart.binary_image.is_vertical():
-        #         break
-        #     else:
-        #         nb_echange += solver.imageElementsStart.lemme_6()
-
-        # print("Nb echange = ", nb_echange)
-
-        # binary_image_displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
-        #                                   array_interchage=solver.imageElementsStart.array_interchange)
+        binary_image_displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+                                          array_interchage=solver.imageElementsStart.array_interchange, speed=300)
 
         binary_image_displayer.show(image=solver.imageElementsStart.binary_image,
-                                    subtitle=key + " AFTER DIAGONAL INTERCHANGE")
+                                    subtitle=key + " AFTER Solve")
 
     return 0
 
