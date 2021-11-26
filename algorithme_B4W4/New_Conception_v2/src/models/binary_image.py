@@ -50,13 +50,14 @@ class BinaryImage:
 
     # From a size of image b,w-connexity and a seed generate a random image
     @staticmethod
-    def create_random_img(n: int, black_connexity=4, white_connexity=4, seed=1, show_p_bar=False):
+    def create_random_img(n: int, black_connexity=4, white_connexity=4, seed=1, show_p_bar=True):
         img = BinaryImage.create_img_from_array([[1]], black_connexity, white_connexity)
         i = 1  # i = 1 because already 1 pixel on the image
         p_bar = None
 
         if show_p_bar:
             p_bar = tqdm(total=n)  # progress bar in print
+            p_bar.set_description("Creating an image size n = " + str(n))  # Description for the loading bar
             p_bar.update(1)  # Adding the first pixel
 
         random.seed(seed)
@@ -78,16 +79,17 @@ class BinaryImage:
                 img.expand_image()
 
                 if show_p_bar:
-                    p_bar.set_description("Creating an image size n = " + str(n))  # Description for the loading bar
                     p_bar.update(1)  # Value to update the loading bar (No impact on the algorithm)
             else:
                 img.borderWhitePixels.remove(border_pixel)  # Removing the black pixel of the list,
                                                             # so we don't try to pick it again
 
-        p_bar.close()                                       # Closing the progress when finished
+        if show_p_bar:
+            p_bar.close()                                       # Closing the progress when finished
 
 
         img.borderWhitePixels = img.get_border_image(img.black_connexity)
+        img.seed = seed
         # creating graph from pixel
         # img.black_graph, img.white_graph = img.create_graphs(img.black_connexity, img.white_connexity)
 
@@ -112,6 +114,46 @@ class BinaryImage:
         img.update_img()
 
         return img
+
+    # From a size create a spiral image
+    @staticmethod
+    def create_img_spiral(size_image: int, black_connexity=4, white_connexity=4):
+        img = BinaryImage.create_img_from_array([[1]], black_connexity, white_connexity)
+
+        current_pixel = img.black_pixels[0]
+
+        nb_pixels_to_add = 2
+
+        array_direction = [Direction.E, Direction.N, Direction.W, Direction.S]
+        direction = array_direction[0]
+
+        choice_of_direction = 0
+
+        nb_pixels = 1
+        while nb_pixels < size_image:
+            for d in range(nb_pixels_to_add):
+                if nb_pixels >= size_image:
+                    break
+                current_pixel = img.get_pixel_directional(current_pixel, [direction])
+                has_change = img.change_color_pixel(current_pixel, PixelColor.BLACK)
+
+                if has_change:
+                    nb_pixels += 1
+                    img.expand_image()
+
+            choice_of_direction += 1
+            direction = array_direction[choice_of_direction % 4]
+            if choice_of_direction % 2 == 0:
+                nb_pixels_to_add += 2
+
+        img.update_img()
+
+        return img
+
+
+
+
+
 
     # endregion Instaciation
     ##############################
@@ -403,7 +445,7 @@ class BinaryImage:
         self.black_pixels = self.get_black_pixels()
         self.white_pixels = self.get_white_pixels()
 
-    # Expand white pixel, to avoid multiples lines or column of white pixels
+    # reduces white pixel, to avoid multiples lines or column of white pixels
     def reduce_image(self) -> None:
         min_x, max_x, min_y, max_y = self.get_extreme_pixels()
         pixel_to_remove = []
@@ -465,11 +507,23 @@ class BinaryImage:
         p = img_temp.get_pixel(pixel.x, pixel.y)
         return not img_temp.change_color_pixel(p, color)
 
+    def black_pixels_width(self):
+        min = float("inf")
+        max = float("-inf")
+        for p in self.black_pixels:
+            if p.y < min:
+                min = p.y
+            if p.y > max:
+                max = p.y
+
+        return max - min + 1
+
     # endregion main_methods
     ##############################
 
     ##############################
     # region Utils
+
 
 
     # For the expand, when you add a line of white pixels under or on the left of the figure,
@@ -538,12 +592,20 @@ class BinaryImage:
 
     # Update every attribute of the BinaryImage
     def update_img(self) -> None:
-        self.height, self.width = self.get_dimensions()  # Getting dimensions of image
+        self.height, self.width = self.get_dimensions()   # Getting dimensions of image
+
+
+
         self.white_pixels = self.get_white_pixels()       # Get all the white pixels
         self.black_pixels = self.get_black_pixels()       # Get all the black pixels
         self.size = len(self.black_pixels)                # size = number of black pixels
 
-        self.expand_image()                              # If black pixels are adjacent to the limit
+        # self.height = self.size + 2
+        # self.width = self.black_pixels_width() + 2
+
+        # self.expand_img()
+
+        self.expand_image()                                # If black pixels are adjacent to the limit
         self.reduce_image()                              # Collapse white pixels collumn or lines
 
         # All the white pixels 4-adjacent to black_pixels
@@ -554,6 +616,9 @@ class BinaryImage:
 
         # creating graph from pixel
         # self.black_graph, self.white_graph = self.create_graphs(self.black_connexity, self.white_connexity)
+
+    # def expand_img(self):
+    #     return None
 
     # Return a Pixel array with all black pixels
     def get_black_pixels(self) -> [Pixel]:

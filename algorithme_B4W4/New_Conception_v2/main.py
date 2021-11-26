@@ -6,7 +6,7 @@ from algorithme_B4W4.New_Conception_v2.src.solvers.B4W4.b4w4_solver import B4W4_
 
 # region Context
 
-img_test = [[1] ]
+img_test = [[1]]
 
 imageIsolatedBlack = [[0, 0, 0, 0, 0],
                       [0, 1, 1, 0, 0],
@@ -115,7 +115,7 @@ weirdKDiag = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
 seed = 345
 black_connexity = 4
 white_connexity = 4
-image_size = 250
+image_size = 50
 
 
 # endregion
@@ -152,56 +152,100 @@ image_size = 250
 # endregion density
 
 def main() -> int:
-    dict_img = {
-                # "ex_simple": showKDiag_simple,
-                "ex_p_1_not_cut": showKDiag_case_not_cut,
-                # "ex_p1_cut": showKDiag_case_cut,
-                # "ex_p1_cut_2": showKDiag_case_cut_2,
-                # "revese k_diag": weirdKDiag
-                }
+    # dict_img = {
+    #             # "ex_simple": showKDiag_simple,
+    #             "ex_p_1_not_cut": showKDiag_case_not_cut,
+    #             # "ex_p1_cut": showKDiag_case_cut,
+    #             # "ex_p1_cut_2": showKDiag_case_cut_2,
+    #             # "revese k_diag": weirdKDiag
+    #             }
+
+    #
+    # for key, img in dict_img.items():
+    #     binary_image_start = BinaryImage.create_img_from_array(img, black_connexity, white_connexity)
+    #     binary_image_final = BinaryImage.create_img_vertical(binary_image_start.size, black_connexity, white_connexity)
+    #     solver = B4W4_Solver(binary_image_start, binary_image_final)
+
+    # print("\n----- Image binary ", key, " -----")
+    # for p in solver.imageElementsStart.all_elbows:
+    #     k, p_1 = solver.imageElementsStart.lemme_5(p)
+    #     print(k, "-diagonal avec on pixel p ", p, " et mon p1 ", p_1)
+
+    # p = solver.imageElementsStart.binary_image.get_pixel(1, 4)
+    # p = solver.imageElementsStart.binary_image.get_pixel(1, 8)
+    # k, p_1 = solver.imageElementsStart.lemme_5(p)
+    #
+    # nb_echange = solver.imageElementsStart.k_diagonal_interchange(p, p_1)
+    # print(nb_echange)
+
+    binary_image_start = BinaryImage.create_random_img(image_size, black_connexity, white_connexity, seed=seed)
+    binary_image_final = BinaryImage.create_random_img(image_size, black_connexity,
+                                                       white_connexity, seed=seed * 2)
+    solver = B4W4_Solver(binary_image_start, binary_image_final)
+
+    ###### Affichage ######
     binary_image_displayer = BinaryImageDisplayer(show_border=False, show_isolated=False, show_legend=True)
+    binary_image_displayer.show(image=binary_image_start, subtitle="Depart")
+    # binary_image_displayer.show(image=binary_image_final, subtitle="Arrivée")
 
-    for key, img in dict_img.items():
-        binary_image_start = BinaryImage.create_img_from_array(img, black_connexity, white_connexity)
-        binary_image_final = BinaryImage.create_img_vertical(binary_image_start.size, black_connexity, white_connexity)
-        solver = B4W4_Solver(binary_image_start, binary_image_final)
-        print("\n----- Image binary ", key, " -----")
-        for p in solver.imageElementsStart.all_elbows:
-            k, p_1 = solver.imageElementsStart.lemme_5(p)
-            print(k, "-diagonal avec on pixel p ", p, " et mon p1 ", p_1)
+    # Solver
+    nb_echange = solver.solve()
 
+    binary_image_displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+                                      array_interchage=solver.array_interchange, speed=1500)
 
+    binary_image_displayer.show(image=solver.imageElementsFinal.binary_image,
+                                subtitle="AFTER Solve")
 
+    print("Nombre d'échange total :", nb_echange)
 
-        ###### Affichage ######
-        custom_pixels_lists_1 = [('gold', solver.imageElementsStart.all_elbows, 'algo.allElbow')]
-        binary_image_displayer.show(image=solver.imageElementsStart.binary_image,
-                                    subtitle=key, custom_pixels_lists=custom_pixels_lists_1)
+    return 0
 
 
-        # p = solver.imageElementsStart.binary_image.get_pixel(1, 4)
-        # p = solver.imageElementsStart.binary_image.get_pixel(1, 8)
-        # k, p_1 = solver.imageElementsStart.lemme_5(p)
-        #
-        # nb_echange = solver.imageElementsStart.k_diagonal_interchange(p, p_1)
-        # print(nb_echange)
-        nb_echange = 0
-        while True:
-            if solver.imageElementsStart.binary_image.is_vertical():
-                break
-            else:
-                temp = solver.imageElementsStart.lemme_6()
-                nb_echange += temp if temp is not None else 0
-                print("Nb echange = ", nb_echange)
+def main_test_spiral() -> int:
+    displayer = BinaryImageDisplayer()
 
-        binary_image_displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
-                                          array_interchage=solver.imageElementsStart.array_interchange, speed=300)
+    binary_img = BinaryImage.create_img_spiral(50, 4, 4)
+    binary_img_vertical = binary_img.create_img_vertical(50, 4, 4)
 
-        binary_image_displayer.show(image=solver.imageElementsStart.binary_image,
-                                    subtitle=key + " AFTER Solve")
+    print(binary_img.size)
+    print(binary_img_vertical.size)
+
+    solver = B4W4_Solver(binary_img, binary_img_vertical)
+
+    nb_echange = solver.solve()
+
+    displayer.show(binary_img)
+
+    displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+                         array_interchage=solver.array_interchange, speed=800)
+
+    return 0
+
+
+def main_fonctionnel() -> int:
+    binary_image_start = BinaryImage.create_img_from_array(showKDiag_case_cut_2, black_connexity, white_connexity)
+    binary_image_final = BinaryImage.create_img_vertical(binary_image_start.size, black_connexity, white_connexity)
+
+    displayer = BinaryImageDisplayer()
+    displayer.show(binary_image_start, subtitle="image de départ")
+
+    solver = B4W4_Solver(binary_image_start, binary_image_final)
+
+    nb_echange = solver.solve()
+
+    print("Nombre d'échange total :", nb_echange)
+
+    displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+                         array_interchage=solver.array_interchange, speed=500)
+
+    displayer.show(image=solver.imageElementsFinal.binary_image,
+                   subtitle="AFTER Solve")
 
     return 0
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    main_test_spiral()
+    # main_fonctionnel()

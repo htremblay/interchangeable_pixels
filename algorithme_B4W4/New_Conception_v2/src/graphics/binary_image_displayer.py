@@ -2,6 +2,7 @@ from __future__ import annotations
 from algorithme_B4W4.New_Conception_v2.src.models.binary_image import BinaryImage
 from algorithme_B4W4.New_Conception_v2.src.models.pixel import Pixel
 from matplotlib.animation import FuncAnimation
+from tqdm import tqdm
 
 from matplotlib import pyplot
 from matplotlib import patches
@@ -103,34 +104,23 @@ class BinaryImageDisplayer:
         pyplot.tight_layout(rect=[0, 0, 1, 1])  # reduce plot size so that the legend can fit
 
     @staticmethod
-    def create_fig(title, image):
-        fig = pyplot.figure()
-        pyplot.title(title)
-
-        # Creates the lines of the grid
-        for i in range(image.height + 1):
-            BinaryImageDisplayer.__draw_line(0, image.width, i, i)
-
-        # Creates the columns of the grid
-        for i in range(image.width + 1):
-            BinaryImageDisplayer.__draw_line(i, i, 0, image.height)
-
-        # Fills the grid with the black pixels
-        for pixel in image.black_pixels:
-            BinaryImageDisplayer.__draw_pixel(x=pixel.x, y=pixel.y, color=BinaryImageDisplayer.BLACK_PIXEL_COLOR)
-
-        return fig
-
-    @staticmethod
     def create_gif(image: BinaryImage, array_interchage: [(Pixel, Pixel)],
                    name="GifInterchange.gif", speed=2000) -> None:
 
         fig, ax = pyplot.subplots()
+
         M = image.convert_pixels_to_img()
         matrice = ax.matshow(M, cmap='Greys')
+        # width = image.width
+        # height = image.height
+
+        p_bar = tqdm(total=len(array_interchage))  # progress bar in print
+        p_bar.set_description("Creating gif nb_interchange n = " + str(len(array_interchage)))  # Description for the loading bar
+
 
 
         def init():
+
             # Creates the lines of the grid
             for i in range(image.height + 1):
                 BinaryImageDisplayer.__draw_line(-0.5, image.width-0.5, i-0.5, i-0.5)
@@ -141,10 +131,15 @@ class BinaryImageDisplayer:
 
         def update(i):
             p, q = array_interchage[i-1]
-            image.swap_pixels(p, q)
-            # image.expand_image()
-            # image.reduce_image()
-            matrice.set_array(image.convert_pixels_to_img())
+            swap = image.swap_pixels(p, q)
+
+            if swap:
+                p_bar.update(1)  # Adding the first pixel
+
+                M = image.convert_pixels_to_img()
+                matrice = ax.matshow(M, cmap='Greys')
+
+                matrice.set_array(image.convert_pixels_to_img())
 
         ani = FuncAnimation(fig, update, frames=len(array_interchage) + 1, interval=speed)
         ani.save(name)
