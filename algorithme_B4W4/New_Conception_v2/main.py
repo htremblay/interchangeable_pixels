@@ -215,10 +215,10 @@ def main_test_spiral() -> int:
 
     nb_echange = solver.solve()
 
-    displayer.show(binary_img)
+    displayer.show(binary_img, subtitle="cooucou")
 
-    displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
-                         array_interchage=solver.array_interchange, speed=800)
+    # displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+    #                      array_interchage=solver.array_interchange, speed=1000, name="SpiraleGif.gif")
 
     return 0
 

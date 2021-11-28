@@ -168,9 +168,9 @@ class B4W4_Elements:
                 break
             else:
                 k_diag, p_1 = self.lemme_5(n_n_w)
-
-                displayer = BinaryImageDisplayer(show_legend=False)
-                displayer.show(self.binary_image)
+                #
+                # displayer = BinaryImageDisplayer(show_legend=False)
+                # displayer.show(self.binary_image)
                 if p_1 is not None:
                     nb_interchange += self.k_diagonal_interchange(n_n_w, p_1)
                 else:

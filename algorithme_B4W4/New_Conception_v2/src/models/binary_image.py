@@ -122,12 +122,15 @@ class BinaryImage:
 
         current_pixel = img.black_pixels[0]
 
-        nb_pixels_to_add = 2
-
+        nb_pixels_to_add = 1
         array_direction = [Direction.E, Direction.N, Direction.W, Direction.S]
-        direction = array_direction[0]
+        horaire = True
+        if horaire:
+            array_direction.reverse()
+
 
         choice_of_direction = 0
+        direction = array_direction[choice_of_direction]
 
         nb_pixels = 1
         while nb_pixels < size_image:
@@ -143,8 +146,7 @@ class BinaryImage:
 
             choice_of_direction += 1
             direction = array_direction[choice_of_direction % 4]
-            if choice_of_direction % 2 == 0:
-                nb_pixels_to_add += 2
+            nb_pixels_to_add += 1
 
         img.update_img()
 

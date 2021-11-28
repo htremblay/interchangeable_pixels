@@ -26,10 +26,6 @@ class B4W4_Solver:
     def solve(self) -> int:
         nb_echange = 0
         while True:
-            if nb_echange == 31:
-                displayer = BinaryImageDisplayer()
-                displayer.show(self.imageElementsStart.binary_image)
-
             if self.imageElementsStart.binary_image.is_vertical():
                 break
             else:
