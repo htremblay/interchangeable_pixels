@@ -66,7 +66,9 @@ class BinaryImageDisplayer:
 
         # Displays optional pixels that we want to highlight
         if custom_pixels_lists is not None:
-            for (color, arrayPixel, _) in custom_pixels_lists:
+            # for key, value in custom_pixels_lists.items():
+            #     print(key, " -> ", value)
+            for (color, arrayPixel) in custom_pixels_lists.items():
                 for pixel in arrayPixel:
                     pyplot.gca().add_patch(pyplot.Rectangle((pixel.y, pixel.x), 1, 1, fc=str(color)))
 
@@ -97,14 +99,14 @@ class BinaryImageDisplayer:
                                          label=isolated_black_pixels_label))
 
         if custom_pixels_lists is not None:
-            for (color, _, label) in custom_pixels_lists:
+            for (color, label) in custom_pixels_lists.items():
                 legends.append(patches.Patch(color=color, label=label))
 
         pyplot.legend(handles=legends, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)  # show legends
         pyplot.tight_layout(rect=[0, 0, 1, 1])  # reduce plot size so that the legend can fit
 
     @staticmethod
-    def create_gif(image: BinaryImage, array_interchage: [(Pixel, Pixel)],
+    def create_gif(image: BinaryImage, array_interchage: [(int, int), (int, int)],
                    name="GifInterchange.gif", speed=2000) -> None:
 
         fig, ax = pyplot.subplots()

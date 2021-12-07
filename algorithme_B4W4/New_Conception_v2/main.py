@@ -3,6 +3,7 @@ from src.models.binary_image import BinaryImage
 from algorithme_B4W4.New_Conception_v2.src.utils import Direction as d
 from algorithme_B4W4.New_Conception_v2.src.solvers.B4W4.b4w4_elements import B4W4_Elements
 from algorithme_B4W4.New_Conception_v2.src.solvers.B4W4.b4w4_solver import B4W4_Solver
+from algorithme_B4W4.New_Conception_v2.src.solvers.B4W8.b4w8_solver import B4W8_Solver
 
 # region Context
 
@@ -37,7 +38,7 @@ showReduce = [[0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0]]
 
-showExpand = [[1], [1], [1]]
+showExpand = [[1, 1, 1]]
 
 IMG_ALGO_B4W4_ELEMENTS = [[0, 0, 0, 1, 1, 0, 0],
                           [0, 0, 0, 1, 0, 0, 1],
@@ -111,6 +112,11 @@ weirdKDiag = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0], ]
+
+test_get_p = [[ 1, 1, 0 ,0],
+              [ 1, 0, 1, 1],
+              [1, 1, 1, 0],
+              [0, 1, 0, 0]]
 
 seed = 345
 black_connexity = 4
@@ -206,7 +212,7 @@ def main_test_spiral() -> int:
     displayer = BinaryImageDisplayer()
 
     binary_img = BinaryImage.create_img_spiral(50, 4, 4)
-    binary_img_vertical = binary_img.create_img_vertical(50, 4, 4)
+    binary_img_vertical = binary_img.create_img_vertical(binary_img.size, 4, 4)
 
     print(binary_img.size)
     print(binary_img_vertical.size)
@@ -214,11 +220,12 @@ def main_test_spiral() -> int:
     solver = B4W4_Solver(binary_img, binary_img_vertical)
 
     nb_echange = solver.solve()
+    print("Nombre d'échange total : ", nb_echange)
 
-    displayer.show(binary_img, subtitle="cooucou")
+    displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+                         array_interchage=solver.array_interchange, speed=1000, name="B4_W4_Spirale.gif")
 
-    # displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
-    #                      array_interchage=solver.array_interchange, speed=1000, name="SpiraleGif.gif")
+    displayer.show(binary_img, subtitle="Image Résultante")
 
     return 0
 
@@ -236,16 +243,46 @@ def main_fonctionnel() -> int:
 
     print("Nombre d'échange total :", nb_echange)
 
-    displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
-                         array_interchage=solver.array_interchange, speed=500)
+    # displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+    #                      array_interchage=solver.array_interchange, speed=500)
 
     displayer.show(image=solver.imageElementsFinal.binary_image,
                    subtitle="AFTER Solve")
 
     return 0
 
+def main_b4_w8() -> int:
+    image_saved = BinaryImage.create_random_img(image_size, 4, 8, seed)
+    image = BinaryImage.create_random_img(image_size, 4, 8, seed)
+
+    image = BinaryImage.create_img_spiral(50, 4, 8)
+    # image = BinaryImage.create_img_from_array(test_get_p, 4, 8)
+    # image_saved = BinaryImage.create_img_from_array(test_get_p, 4, 8)
+    image_final = BinaryImage.create_img_vertical(image.size, 4, 8)
+
+    displayer = BinaryImageDisplayer(show_legend=True)
+
+    solver = B4W8_Solver(image, image_final)
+
+    displayer.show(solver.imageStart, subtitle="Begined")
+
+    nb_interchange = solver.solve()
+
+
+    print("Nb interchange = ", nb_interchange)
+    print("len interchange = ", len(solver.array_interchange))
+
+    displayer.show(solver.imageStart, subtitle="Finished")
+
+    displayer.create_gif(image=solver.get_image_save(),
+                         array_interchage=solver.array_interchange, speed=1000, name="B4_W8.gif")
+
+    return 0
+
+
 
 if __name__ == "__main__":
     # main()
     main_test_spiral()
     # main_fonctionnel()
+    # main_b4_w8()

@@ -19,7 +19,7 @@ class B4W4_Solver:
 
         self.imageElementsStart = B4W4_Elements(binaryImageStart)    # starting image
         self.imageElementsFinal = B4W4_Elements(binaryImageFinal)    # final image
-        self.array_interchange = []
+        self.array_interchange = []                                  # array of all interchange
         self.interchange = 0                                         # Number of swap
 
     # todo implement method
