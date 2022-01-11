@@ -36,14 +36,17 @@ class B4W8_Solver:
                 break
             else:
                 print("first image : ", nb_interchange)
-                temp = self.__resolve_image(self.imageStart)
+                # if nb_interchange%100 == 0:
+                #     displayer = BinaryImageDisplayer()
+                #     displayer.show(self.imageStart, subtitle=nb_interchange)
+                temp = self.resolve_image(self.imageStart)
                 nb_interchange += temp
 
         # Todo Solving 2nd image
 
         return nb_interchange
 
-    def __resolve_image(self, binary_image: BinaryImage) -> int:
+    def resolve_image(self, binary_image: BinaryImage) -> int:
         nb_interchange = 0
         p = self.get_p(binary_image)
         array_interchange = []
@@ -71,30 +74,32 @@ class B4W8_Solver:
             w = binary_image.get_pixel_directional(p, [Direction.W])
             n = binary_image.get_pixel_directional(p, [Direction.N])
             n_w = binary_image.get_pixel_directional(p, [Direction.N, Direction.W])
-            g = n_n_w = binary_image.get_pixel_directional(p, [Direction.N, Direction.N, Direction.W])
-            if g.color != PixelColor.WHITE:
+            g = n_w_w = binary_image.get_pixel_directional(p, [Direction.N, Direction.W, Direction.W])
+            n_n_w = binary_image.get_pixel_directional(p, [Direction.N, Direction.N, Direction.W])
+            if not binary_image.is_cut_vertex(n_w):
+                array_interchange.append((p.get_coords(), n_w.get_coords()))
+                binary_image.swap_pixels(p.get_coords(), n_w.get_coords())
+                nb_interchange += 1
+
+            elif g.color == PixelColor.BLACK: # if we're here g should be black
                 path_found, west_path = self.find_path(g, p, binary_image,
                                                        pixel_bridge=w, connexity=binary_image.black_connexity)
-            if g.color != PixelColor.WHITE and path_found and west_path:
-                array_interchange.append((w.get_coords(), n_w.get_coords()))
-                binary_image.swap_pixels(w.get_coords(), n_w.get_coords())
-                nb_interchange += 1
-            else:
-                cut_n_w = binary_image.is_cut_vertex(n_w)
-                if not cut_n_w:
-                    array_interchange.append((p.get_coords(), n_w.get_coords()))
-                    binary_image.swap_pixels(p.get_coords(), n_w.get_coords())
-                    nb_interchange += 1
-                elif n_n_w.color == PixelColor.WHITE:
-                    array_interchange.append((n.get_coords(), n_w.get_coords()))
-                    binary_image.swap_pixels(n.get_coords(), n_w.get_coords())
+
+                if g.color != PixelColor.WHITE and path_found and west_path:
+                    array_interchange.append((w.get_coords(), n_w.get_coords()))
+                    binary_image.swap_pixels(w.get_coords(), n_w.get_coords())
                     nb_interchange += 1
                 else:
-                    array_interchange.append((g.get_coords(),
-                                              binary_image.get_pixel_directional(g, [Direction.E]).get_coords()))
-                    array_interchange.append((n.get_coords(),
-                                              binary_image.get_pixel_directional(n, [Direction.N, Direction.E]).get_coords()))
-                    nb_interchange += binary_image.multiple_swap_pixels(array_interchange)
+                    if n_n_w.color == PixelColor.WHITE:
+                        array_interchange.append((n.get_coords(), n_w.get_coords()))
+                        binary_image.swap_pixels(n.get_coords(), n_w.get_coords())
+                        nb_interchange += 1
+                    else:
+                        array_interchange.append((g.get_coords(),
+                                                  binary_image.get_pixel_directional(g, [Direction.E]).get_coords()))
+                        array_interchange.append((n.get_coords(),
+                                                  binary_image.get_pixel_directional(n, [Direction.N, Direction.E]).get_coords()))
+                        nb_interchange += binary_image.multiple_swap_pixels(array_interchange)
 
         if nb_interchange > 0:
             self.array_interchange = [*self.array_interchange, *array_interchange]
@@ -123,10 +128,10 @@ class B4W8_Solver:
                 return True, pixel_bridge_bool
 
             ajd_pixels = img.get_neighbours(n, connexity, color=PixelColor.BLACK)
-
             for i in ajd_pixels:
                 if not visited[img.black_pixels.index(i)]:
-                    queue.append(i)
+                    if i not in queue:
+                        queue.append(i)
                     visited[img.black_pixels.index(n)] = True
 
         print(visited)

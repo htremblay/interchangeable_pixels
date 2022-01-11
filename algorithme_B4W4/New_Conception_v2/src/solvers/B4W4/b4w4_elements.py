@@ -118,8 +118,6 @@ class B4W4_Elements:
                 n_n_w_w = self.binary_image.get_pixel_directional(p, [Direction.N, Direction.N,
                                                                       Direction.W, Direction.W])
 
-
-
                 if n_w.color == PixelColor.BLACK:
                     self.binary_image.swap_pixels(p.get_coords(), n.get_coords())
                     array_interchange.append((p.get_coords(), n.get_coords()))
