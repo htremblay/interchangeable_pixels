@@ -16,7 +16,6 @@ class B4W4_Solver:
         if binaryImageStart.size != binaryImageFinal.size:
             print("Size of images must be the same !")
             exit()
-
         self.imageElementsStart = B4W4_Elements(binaryImageStart)    # starting image
         self.imageElementsFinal = B4W4_Elements(binaryImageFinal)    # final image
         self.array_interchange = []                                  # array of all interchange
@@ -29,7 +28,6 @@ class B4W4_Solver:
             if self.imageElementsStart.binary_image.is_vertical():
                 break
             else:
-                print("first image : ", nb_echange)
                 temp = self.imageElementsStart.lemme_6()
                 nb_echange += temp if temp is not None else 0
 

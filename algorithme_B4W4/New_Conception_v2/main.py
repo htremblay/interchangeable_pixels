@@ -4,6 +4,9 @@ from algorithme_B4W4.New_Conception_v2.src.utils import Direction as d
 from algorithme_B4W4.New_Conception_v2.src.solvers.B4W4.b4w4_elements import B4W4_Elements
 from algorithme_B4W4.New_Conception_v2.src.solvers.B4W4.b4w4_solver import B4W4_Solver
 from algorithme_B4W4.New_Conception_v2.src.solvers.B4W8.b4w8_solver import B4W8_Solver
+from algorithme_B4W4.New_Conception_v2.src.solvers.B8W4.b8w4_solver import B8W4_Solver
+from algorithme_B4W4.New_Conception_v2.src.solvers.B8W8.b8w8_solver import B8W8_Solver
+from algorithme_B4W4.New_Conception_v2.src.statistics.statistics_solver import Statistics
 
 # region Context
 
@@ -113,8 +116,8 @@ weirdKDiag = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0], ]
 
-test_get_p = [[ 1, 1, 0 ,0],
-              [ 1, 0, 1, 1],
+test_get_p = [[1, 1, 0, 0],
+              [1, 0, 1, 1],
               [1, 1, 1, 0],
               [0, 1, 0, 0]]
 
@@ -214,16 +217,15 @@ def main_test_spiral() -> int:
     binary_img = BinaryImage.create_img_spiral(50, 4, 4)
     binary_img_vertical = binary_img.create_img_vertical(binary_img.size, 4, 4)
 
-    print(binary_img.size)
-    print(binary_img_vertical.size)
+    displayer.show(binary_img, subtitle="Image de départ")
 
     solver = B4W4_Solver(binary_img, binary_img_vertical)
 
     nb_echange = solver.solve()
     print("Nombre d'échange total : ", nb_echange)
 
-    displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
-                         array_interchage=solver.array_interchange, speed=1000, name="B4_W4_Spirale.gif")
+    # displayer.create_gif(image=solver.imageElementsStart.get_saved_img(),
+    #                      array_interchage=solver.array_interchange, speed=1000, name="B4_W4_Spirale.gif")
 
     displayer.show(binary_img, subtitle="Image Résultante")
 
@@ -251,28 +253,23 @@ def main_fonctionnel() -> int:
 
     return 0
 
-def main_b4_w8() -> int:
-    image_saved = BinaryImage.create_random_img(image_size, 4, 8, seed)
-    image = BinaryImage.create_random_img(image_size, 4, 8, seed)
 
+def main_b4_w8() -> int:
     image = BinaryImage.create_img_spiral(50, 4, 8)
-    # image = BinaryImage.create_img_from_array(test_get_p, 4, 8)
-    # image_saved = BinaryImage.create_img_from_array(test_get_p, 4, 8)
     image_final = BinaryImage.create_img_vertical(image.size, 4, 8)
 
     displayer = BinaryImageDisplayer(show_legend=True)
 
     solver = B4W8_Solver(image, image_final)
 
-    displayer.show(solver.imageStart, subtitle="Begined")
+    displayer.show(solver.imageStart, subtitle="Image de départ")
 
     nb_interchange = solver.solve()
-
 
     print("Nb interchange = ", nb_interchange)
     print("len interchange = ", len(solver.array_interchange))
 
-    displayer.show(solver.imageStart, subtitle="Finished")
+    displayer.show(solver.imageStart, subtitle="Image de fin")
 
     displayer.create_gif(image=solver.get_image_save(),
                          array_interchage=solver.array_interchange, speed=1000, name="B4_W8.gif")
@@ -280,9 +277,114 @@ def main_b4_w8() -> int:
     return 0
 
 
+def main_b8_w4() -> int:
+    image = BinaryImage.create_img_spiral(50, 8, 4)
+    image_final = BinaryImage.create_img_vertical(image.size, 8, 4)
+
+    displayer = BinaryImageDisplayer(show_legend=True)
+
+    solver = B8W4_Solver(image, image_final)
+
+    displayer.show(solver.imageStart, subtitle="Image de départ")
+
+    nb_interchange = solver.solve()
+
+    print("Nb interchange = ", nb_interchange)
+    print("len interchange = ", len(solver.array_interchange))
+
+    displayer.show(solver.imageStart, subtitle="Image de fin")
+
+    displayer.create_gif(image=solver.get_image_save(),
+                         array_interchage=solver.array_interchange, speed=1000, name="B8_W4.gif")
+
+    return 0
+
+
+def main_b8_w8() -> int:
+    image = BinaryImage.create_img_spiral(50, 8, 8)
+    image_final = BinaryImage.create_img_vertical(image.size, 8, 8)
+
+    displayer = BinaryImageDisplayer(show_legend=True)
+
+    solver = B8W8_Solver(image, image_final)
+
+    displayer.show(solver.imageStart, subtitle="Image de départ")
+
+    nb_interchange = solver.solve()
+
+    print("Nb interchange = ", nb_interchange)
+    print("len interchange = ", len(solver.array_interchange))
+
+    displayer.show(solver.imageStart, subtitle="Image de fin")
+
+    displayer.create_gif(image=solver.get_image_save(),
+                         array_interchage=solver.array_interchange, speed=1000, name="B8_W8.gif")
+
+    return 0
+
+
+def main_debug():
+    img_depart = [[0, 0, 0, 0, 0, 0, 0],
+                  [0, 1, 1, 1, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 1, 0],
+                  [0, 1, 1, 1, 1, 1, 0],
+                  [0, 0, 0, 0, 0, 0, 0]]
+
+    binary_image = BinaryImage.create_random_img(n=50, black_connexity=4,
+                                                 white_connexity=8, seed=432432)
+
+    displayer = BinaryImageDisplayer()
+    displayer.show(binary_image, subtitle="Départ")
+    solver = B4W8_Solver(binary_image, BinaryImage.create_img_vertical(binary_image.size))
+
+    solver.solve()
+
+    displayer.show(binary_image, subtitle="After resolver")
+
+
+import matplotlib.pyplot as plt
+
+# Total average for solver B 4 W 8  is  {5: [[235999, 148373, 202631], 7.0], 10: [[75960, 213758, 345888], 42.666666666666664], 15: [[29297, 51231, 321420], 113.66666666666667], 20: [[438003, 50316, 27994], 185.66666666666666], 25: [[481988, 409007, 22339], 268.6666666666667], 30: [[448365, 48116, 431951], 414.0], 35: [[182029, 184751, 475205], 561.0], 40: [[474483, 130499, 320600], 785.0], 45: [[305534, 432432, 269078], 918.0], 50: [[381713, 155404, 288378], 1105.3333333333333]}
+# Total average for solver B 8 W 4  is  {5: [[113294, 398124, 464447], 20.333333333333332], 10: [[463190, 166874, 355065], 54.0], 15: [[308737, 203327, 437814], 145.33333333333334], 20: [[64383, 106521, 419514], 221.0], 25: [[139155, 460119, 436670], 388.0], 30: [[88476, 298922, 231609], 546.6666666666666], 35: [[4499, 338169, 431810], 761.6666666666666], 40: [[290605, 285740, 101669], 1041.0], 45: [[449875, 46362, 316450], 1270.0], 50: [[59855, 322571, 125284], 1537.6666666666667]}
+# Total average for solver B 8 W 8  is  {5: [[86631, 267480, 17878], 16.0], 10: [[276331, 394143, 268103], 58.0], 15: [[244757, 250155, 265709], 116.0], 20: [[477921, 467021, 307654], 228.0], 25: [[371857, 245787, 484163], 430.3333333333333], 30: [[176932, 219330, 134947], 497.6666666666667], 35: [[373908, 81066, 312737], 680.3333333333334], 40: [[81198, 6304, 250306], 865.6666666666666], 45: [[379099, 200861, 423999], 1186.6666666666667], 50: [[159773, 71118, 482130], 1419.6666666666667]}
+# Total average for solver B 4 W 4  is  {5: [[7315, 239720, 424945], 9.666666666666666], 10: [[88678, 385206, 228018], 40.333333333333336], 15: [[217388, 398285, 441501], 107.66666666666667], 20: [[214435, 39362, 310586], 169.0], 25: [[430391, 279359, 168519], 300.3333333333333], 30: [[143609, 128593, 244806], 393.3333333333333], 35: [[290438, 189132, 78319], 627.0], 40: [[161174, 287589, 71750], 727.6666666666666], 45: [[319089, 25908, 32505], 1051.6666666666667], 50: [[149040, 409611, 25654], 1289.0]}
+def main_statistics():
+    all_connexities = [#[4, 8],
+                       # [8, 4],
+                       # [8, 8],
+                       [4, 4]
+                            ]
+
+    for connexity in all_connexities:
+        stats = Statistics()
+        print(connexity)
+        # stats.statistics_from_random_images(black_connexity=connexity[0], white_connexity=connexity[1],
+        #                                     nb_iter=10, nb_tick=3, size_image=5, incr_size_image=5)
+
+
+        stats.dic_interchanges = {5: [[7315, 239720, 424945], 9.666666666666666], 10: [[88678, 385206, 228018], 40.333333333333336], 15: [[217388, 398285, 441501], 107.66666666666667], 20: [[214435, 39362, 310586], 169.0], 25: [[430391, 279359, 168519], 300.3333333333333], 30: [[143609, 128593, 244806], 393.3333333333333], 35: [[290438, 189132, 78319], 627.0], 40: [[161174, 287589, 71750], 727.6666666666666], 45: [[319089, 25908, 32505], 1051.6666666666667], 50: [[149040, 409611, 25654], 1289.0]}
+        plt.figure()
+
+        plt.xlabel('nb of pixels')
+        plt.ylabel('nb of exchanges')
+        title = 'complexity of the B' + str(connexity[0]) + "W" + str(connexity[1]) + " algorithm"
+        plt.title(title)
+        x = []
+        y = []
+        for key, values in stats.dic_interchanges.items():
+            x.append(key)
+            y.append(values[1])
+
+        plt.plot(x, y)
+        plt.show()
+
 
 if __name__ == "__main__":
     # main()
-    main_test_spiral()
+    # main_test_spiral()
     # main_fonctionnel()
     # main_b4_w8()
+    # main_b8_w4()
+    # main_b8_w8()
+    # main_debug()
+    main_statistics()

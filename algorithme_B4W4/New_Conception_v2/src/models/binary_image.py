@@ -34,7 +34,6 @@ class BinaryImage:
         # creating graph from pixel
         self.black_graph, self.white_graph = (0, 0)
 
-
     def __copy__(self):
         return self.create_img_from_array(self.convert_pixels_to_img(), self.black_connexity, self.white_connexity)
 
@@ -57,7 +56,9 @@ class BinaryImage:
 
         if show_p_bar:
             p_bar = tqdm(total=n)  # progress bar in print
-            p_bar.set_description("Creating an image size n = " + str(n))  # Description for the loading bar
+            p_bar.set_description("Creating B" + str(img.black_connexity) + "W" +
+                                  str(img.white_connexity) + "connected; n="+str(n)+
+                                  "; seed " + str(seed))  # Description for the loading bar
             p_bar.update(1)  # Adding the first pixel
 
         random.seed(seed)

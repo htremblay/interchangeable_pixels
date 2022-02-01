@@ -7,6 +7,7 @@ from algorithme_B4W4.New_Conception_v2.src.graphics.binary_image_displayer impor
 from algorithme_B4W4.New_Conception_v2.src.solvers.B4W8.b4w8_solver import B4W8_Solver
 from algorithme_B4W4.New_Conception_v2.src.solvers.B8W4.b8w4_solver import B8W4_Solver
 
+
 BLACK_CONNEXITY = 8
 WHITE_CONNEXITY = 8
 INTERCHANGE_CONNEXITY = 8
@@ -36,12 +37,7 @@ class B8W8_Solver:
             if self.imageStart.is_vertical():
                 break
             else:
-                print("first image : ", self.interchange)
-                # if self.interchange % 100 == 0:
-                #     displayer = BinaryImageDisplayer()
-                #     displayer.show(self.imageStart, subtitle=self.interchange)
-                temp = self.resolve_image(self.imageStart)
-                self.interchange += temp
+                self.interchange += self.resolve_image(self.imageStart)
 
         return self.interchange
 

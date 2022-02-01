@@ -45,8 +45,7 @@ class B4W4_Elements:
                 n_w = self.binary_image.get_pixel_directional(p_i, [Direction.N, Direction.W])
                 array_interchange.append((p_i.get_coords(), n_w.get_coords()))
         else:
-            if len(compute_elbows_set) != 1:
-                compute_elbows_set.remove(p)
+            compute_elbows_set.remove(p)
             for p_i in compute_elbows_set:
                 s_e = self.binary_image.get_pixel_directional(p_i, [Direction.S, Direction.E])
                 array_interchange.append((p_i.get_coords(), s_e.get_coords()))
@@ -58,7 +57,8 @@ class B4W4_Elements:
 
         return nb_interchange
 
-    # From a pixel return the (k-diagonal_interchange, p_1) assiociated
+    # From a pixel return the (k-diagonal_interchange, p_1) assiociated.
+    # Return (0, None) it's a 0-diagonal interchange
     def lemme_5(self, pixel: Pixel) -> (int, Pixel):
         img_temp = copy.copy(self.binary_image)
         p = copy.copy(pixel)
@@ -115,7 +115,7 @@ class B4W4_Elements:
                 n_w = self.binary_image.get_pixel_directional(p, [Direction.N, Direction.W])
                 n_n_w = self.binary_image.get_pixel_directional(p, [Direction.N, Direction.N, Direction.W])
                 n_w_w = self.binary_image.get_pixel_directional(p, [Direction.N, Direction.W, Direction.W])
-                n_n_w_w = self.binary_image.get_pixel_directional(p, [Direction.N, Direction.N,
+                q = n_n_w_w = self.binary_image.get_pixel_directional(p, [Direction.N, Direction.N,
                                                                       Direction.W, Direction.W])
 
                 if n_w.color == PixelColor.BLACK:
@@ -129,19 +129,18 @@ class B4W4_Elements:
                     nb_interchange += 1
                 elif n_n_w_w.color == PixelColor.BLACK and n_w_w.color == PixelColor.WHITE:
                     k_diag, p_1 = self.lemme_5(n_n_w_w)
-                    nb_interchange += self.k_diagonal_interchange(n_n_w_w, p_1)
-                    if n_n_w_w.color == PixelColor.WHITE:
+                    if p_1 is not None:
+                        nb_interchange += self.k_diagonal_interchange(n_n_w_w, p_1)
+
+                    if self.binary_image.get_pixel(q.x, q.y).color == PixelColor.WHITE:
                         self.binary_image.swap_pixels(p.get_coords(), n_w.get_coords())
                         array_interchange.append((p.get_coords(), n_w.get_coords()))
                         nb_interchange += 1
                     else:
-                        s_e = self.binary_image.get_pixel_directional(n_n_w_w, [Direction.S, Direction.E])
-                        n = self.binary_image.get_pixel_directional(p, [Direction.N])
-                        self.binary_image.swap_pixels(n_n_w_w.get_coords(), s_e.get_coords())
-                        array_interchange.append((n_n_w_w.get_coords(), s_e.get_coords()))
-                        self.binary_image.swap_pixels(p.get_coords(), n.get_coords())
-                        array_interchange.append((n_n_w_w.get_coords(), s_e.get_coords()))
-                        nb_interchange += 2
+                        s_e_q = self.binary_image.get_pixel_directional(q, [Direction.S, Direction.E])
+                        array_interchange.append((q.get_coords(), s_e_q.get_coords()))
+                        array_interchange.append((p.get_coords(), n.get_coords()))
+                        nb_interchange += self.binary_image.multiple_swap_pixels(array_interchange)
         else:
             p = copy.copy(self.lead_elbow)
             k_diag, p_1 = self.lemme_5(p)
@@ -157,23 +156,26 @@ class B4W4_Elements:
 
     def first_condition(self) -> int:
         nb_interchange = 0
-
-
-        while True:
-            n_w = self.binary_image.get_pixel_directional(self.top_pixel, [Direction.N, Direction.W])
-            n_n_w = self.binary_image.get_pixel_directional(self.top_pixel, [Direction.N, Direction.N, Direction.W])
+        n_w = self.binary_image.get_pixel_directional(self.top_pixel, [Direction.N, Direction.W])
+        n_n_w = self.binary_image.get_pixel_directional(self.top_pixel, [Direction.N, Direction.N, Direction.W])
+        while n_n_w.color == PixelColor.BLACK:
             if not (n_w.color == PixelColor.WHITE and n_n_w.color == PixelColor.BLACK):
-                break
+                return nb_interchange
             else:
                 k_diag, p_1 = self.lemme_5(n_n_w)
-                #
-                # displayer = BinaryImageDisplayer(show_legend=False)
-                # displayer.show(self.binary_image)
                 if p_1 is not None:
                     nb_interchange += self.k_diagonal_interchange(n_n_w, p_1)
-                else:
-                    nb_interchange += self.k_diagonal_interchange(n_n_w, n_n_w)
 
+                if self.binary_image.get_pixel(n_n_w.x, n_n_w.y).color == PixelColor.BLACK:
+                    n = self.binary_image.get_pixel_adjacent(self.top_pixel, Direction.N)
+                    self.array_interchange.append((n_n_w.get_coords(), n.get_coords()))
+                    self.binary_image.swap_pixels(n_n_w.get_coords(), n.get_coords())
+                    nb_interchange += 1
+
+                self.all_elbows = self.compute_all_elbows()
+                self.top_pixel = self.compute_top_pixel()
+                n_w = self.binary_image.get_pixel_directional(self.top_pixel, [Direction.N, Direction.W])
+                n_n_w = self.binary_image.get_pixel_directional(self.top_pixel, [Direction.N, Direction.N, Direction.W])
 
         return nb_interchange
 
@@ -247,10 +249,11 @@ class B4W4_Elements:
 
     # Return the top pixel
     def compute_top_pixel(self) -> Pixel:
-        top_pixel = self.frontier[0]
+        frontier, _ = self.compute_frontier()
+        top_pixel = frontier[0]
         max_x = top_pixel.x
 
-        for p in self.frontier:
+        for p in frontier:
             if max_x < p.x:
                 max_x = p.x
                 top_pixel = p

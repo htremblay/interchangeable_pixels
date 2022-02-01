@@ -292,33 +292,32 @@ class AlgoB4W4Tests(unittest.TestCase):
                          len(solver.array_interchange),
                          "The number interchange should be 1")
 
+    def test_lemme_6_case_1_k_0_NWp_and_NNWp_white_but_NNWWp_black_and_NWW_white(self):
+        img_depart = [[0, 0, 0, 0, 0, 0],
+                      [0, 1, 1, 0, 0, 0],
+                      [0, 1, 0, 0, 0, 0],
+                      [0, 1, 1, 1, 1, 0],
+                      [0, 0, 0, 0, 0, 0]]
 
-    #TODO Can't be solve for now
-    # def test_lemme_6_case_1_k_0_NWp_and_NNWp_white_but_NNWWp_black_and_NWW_white(self):
-    #     img_depart = [[0, 0, 0, 0, 0, 0],
-    #                   [0, 1, 1, 0, 0, 0],
-    #                   [0, 1, 0, 0, 0, 0],
-    #                   [0, 1, 1, 1, 1, 0],
-    #                   [0, 0, 0, 0, 0, 0]]
-    #
-    #     img_soluce = [[0, 0, 0],
-    #                   [0, 1, 0],
-    #                   [0, 1, 0],
-    #                   [0, 0, 0]]
-    #
-    #     binary_image = BinaryImage.create_img_from_array(img_depart, BLACK_CONNEXITY, WHITE_CONNEXITY)
-    #
-    #     solver = B4W4_Elements(binary_image)
-    #
-    #     solver.lemme_6()
-    #
-    #     self.assertEqual(img_soluce,
-    #                      binary_image.convert_pixels_to_img(),
-    #                      "In case of lemma_6, if the lead elbow = p is not cut vertex and k=0 and NW(p) is black"
-    #                      "then the interchange is <p, N(p)>")
-    #     self.assertEqual(1,
-    #                      len(solver.array_interchange),
-    #                      "The number interchange should be 1")
+        img_soluce = [[0, 0, 0, 0, 0, 0],
+                      [0, 1, 0, 0, 0, 0],
+                      [0, 1, 0, 1, 1, 0],
+                      [0, 1, 1, 1, 0, 0],
+                      [0, 0, 0, 0, 0, 0]]
+
+        binary_image = BinaryImage.create_img_from_array(img_depart, BLACK_CONNEXITY, WHITE_CONNEXITY)
+
+        solver = B4W4_Elements(binary_image)
+
+        solver.lemme_6()
+
+        self.assertEqual(img_soluce,
+                         binary_image.convert_pixels_to_img(),
+                         "In case of lemma_6, if the lead elbow = p is not cut vertex and k=0 and NW(p) is black"
+                         "then the interchange is <p, N(p)>")
+        self.assertEqual(2,
+                         len(solver.array_interchange),
+                         "The number interchange should be 2")
 
     def test_lemme_6_p_cut_into_white(self):
         img_depart = [[0, 0, 0, 0, 0],

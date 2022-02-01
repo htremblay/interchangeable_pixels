@@ -35,9 +35,7 @@ class B8W4_Solver:
             if self.imageStart.is_vertical():
                 break
             else:
-                print("first image : ", self.interchange)
-                temp = self.__resolve_image(self.imageStart)
-                self.interchange += temp
+                self.interchange += self.resolve_image(self.imageStart)
 
         # Todo Solving 2nd image
 

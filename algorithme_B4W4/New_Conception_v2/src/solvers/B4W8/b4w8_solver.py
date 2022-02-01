@@ -5,6 +5,7 @@ from algorithme_B4W4.New_Conception_v2.src.models.pixel import Pixel, PixelColor
 from algorithme_B4W4.New_Conception_v2.src.models.binary_image import BinaryImage
 from algorithme_B4W4.New_Conception_v2.src.graphics.binary_image_displayer import BinaryImageDisplayer
 
+
 BLACK_CONNEXITY = 4
 WHITE_CONNEXITY = 8
 INTERCHANGE_CONNEXITY = 8
@@ -30,21 +31,15 @@ class B4W8_Solver:
         return self.__imageStart_saved
 
     def solve(self) -> int:
-        nb_interchange = 0
         while True:
             if self.imageStart.is_vertical():
                 break
             else:
-                print("first image : ", nb_interchange)
-                # if nb_interchange%100 == 0:
-                #     displayer = BinaryImageDisplayer()
-                #     displayer.show(self.imageStart, subtitle=nb_interchange)
-                temp = self.resolve_image(self.imageStart)
-                nb_interchange += temp
+                self.interchange += self.resolve_image(self.imageStart)
 
         # Todo Solving 2nd image
 
-        return nb_interchange
+        return self.interchange
 
     def resolve_image(self, binary_image: BinaryImage) -> int:
         nb_interchange = 0
