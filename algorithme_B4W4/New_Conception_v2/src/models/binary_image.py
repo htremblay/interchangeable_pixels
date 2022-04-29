@@ -25,14 +25,11 @@ class BinaryImage:
         self.black_pixels = []  # Get all the black pixels
         self.size = 0  # Get the number of black pixels on the image
 
-        # All the white pixels 4-adjacent to black_pixels
-        self.borderWhitePixels = []
+        # All the white pixels a-adjacent to black_pixels
+        self.border_white_pixels = []
 
         # Check if the image is fully B4,W4-connected
-        self.connected, self.isolatedBlackPixels, self.isolatedWhitePixels = (False, [], [])
-
-        # creating graph from pixel
-        self.black_graph, self.white_graph = (0, 0)
+        self.connected, self.isolated_black_pixels, self.isolated_white_pixels = (False, [], [])
 
     def __copy__(self):
         return self.create_img_from_array(self.convert_pixels_to_img(), self.black_connexity, self.white_connexity)
@@ -64,7 +61,7 @@ class BinaryImage:
         random.seed(seed)
 
         while i < n:
-            border_pixel = random.choice(img.borderWhitePixels)  # Choosing randomly a while pixel in the border
+            border_pixel = random.choice(img.border_white_pixels)  # Choosing randomly a while pixel in the border
 
             # Changing the white pixel to black
             has_change = img.change_color_pixel(border_pixel, PixelColor.BLACK)
@@ -73,8 +70,8 @@ class BinaryImage:
                 # Temporary list takes the new black pixel
                 new_border_pixels = img.get_neighbours(border_pixel, black_connexity, PixelColor.WHITE)
                 for pixel in new_border_pixels:
-                    if pixel not in img.borderWhitePixels:
-                        img.borderWhitePixels.append(pixel)
+                    if pixel not in img.border_white_pixels:
+                        img.border_white_pixels.append(pixel)
                 i += 1  # +1 black pixel on the image
 
                 img.expand_image()
@@ -82,14 +79,14 @@ class BinaryImage:
                 if show_p_bar:
                     p_bar.update(1)  # Value to update the loading bar (No impact on the algorithm)
             else:
-                img.borderWhitePixels.remove(border_pixel)  # Removing the black pixel of the list,
+                img.border_white_pixels.remove(border_pixel)  # Removing the black pixel of the list,
                                                             # so we don't try to pick it again
 
         if show_p_bar:
             p_bar.close()                                       # Closing the progress when finished
 
 
-        img.borderWhitePixels = img.get_border_image(img.black_connexity)
+        img.border_white_pixels = img.get_border_image(img.black_connexity)
         img.seed = seed
         # creating graph from pixel
         # img.black_graph, img.white_graph = img.create_graphs(img.black_connexity, img.white_connexity)
@@ -164,15 +161,7 @@ class BinaryImage:
     ##############################
     # region get_informations
 
-    # Return title of an image
-    def get_title(self) -> str:
-        """Returns the title of the image based on its specs"""
-        return f'{self.seed}_{self.get_size()}_B{self.black_connexity}_W{self.white_connexity}'
 
-    # Return size of an image
-    def get_size(self) -> int:
-        """Returns the size of the binary image (count of its black pixels)"""
-        return len(self.black_pixels)
 
     # Get the border of all the black image. You can choose the connexity
     # Return an array of white pixels.
@@ -269,31 +258,6 @@ class BinaryImage:
     ##############################
     # region main_methods
 
-    def create_graphs(self, black_connexity=4, white_connexity=4) -> (nx.Graph(), nx.Graph()):
-        white_graph = self.create_nodes(PixelColor.WHITE)
-        black_graph = self.create_nodes(PixelColor.BLACK)
-
-        for p in self.black_pixels:
-            neighbours = self.get_neighbours(p, connexity=black_connexity, color=PixelColor.BLACK)
-            for n in neighbours:
-                black_graph.add_edge((p.x, p.y), (n.x, n.y))
-
-        for p in self.white_pixels:
-            neighbours = self.get_neighbours(p, connexity=white_connexity, color=PixelColor.BLACK)
-            for n in neighbours:
-                white_graph.add_edge((p.x, p.y), (n.x, n.y))
-
-        return black_graph, white_graph
-
-    def create_nodes(self, color:PixelColor) -> nx.Graph():
-        nodes = nx.Graph()
-        if color == PixelColor.BLACK:
-            for p in self.black_pixels:
-                nodes.add_node((p.x, p.y))
-        elif color == PixelColor.WHITE:
-            for p in self.white_pixels:
-                nodes.add_node((p.x, p.y))
-        return nodes
 
     # Return a boolean if the swap of 2 pixels is possible
     def swap_pixels(self, p: (int, int), q: (int, int), swap_active=True) -> bool:
@@ -331,8 +295,8 @@ class BinaryImage:
 
         return swap_pixel
 
-
-    def is_vertical(self):
+    # Return a boolean, true if the image is vertical, False otherwise
+    def is_vertical(self) -> bool:
         y = self.black_pixels[0].y
         for p in self.black_pixels:
             if p.y != y:
@@ -379,7 +343,7 @@ class BinaryImage:
 
     # Check if the image respect the Black & White connexity restrictions
     # Return True or False, array of not visited black pixels, array of not visited white pixels
-    def is_image_connected(self, blackPixelToStrart=None, whitePixelToStart=None) -> (bool, [int], [int]):
+    def is_image_connected(self, blackPixelToStrart=None, whitePixelToStart=None) -> (bool, [Pixel], [Pixel]):
         notVisitedBlack = self.black_pixels.copy()
         blackVisited = []
         blackWaitingList = []
@@ -501,7 +465,7 @@ class BinaryImage:
             print("Connexity must be in ", CONNEXITY_RESTRICTION, " !")
 
         # Update isolated pixels
-        self.connected, self.isolatedBlackPixels, self.isolatedWhitePixels = self.is_image_connected()
+        self.connected, self.isolated_black_pixels, self.isolated_white_pixels = self.is_image_connected()
 
     # Return if a pixel is a cut vertex
     def is_cut_vertex(self, pixel: Pixel) -> bool:
@@ -509,6 +473,23 @@ class BinaryImage:
         img_temp = self.__copy__()
         p = img_temp.get_pixel(pixel.x, pixel.y)
         return not img_temp.change_color_pixel(p, color)
+
+
+    # endregion main_methods
+    ##############################
+
+    ##############################
+    # region Utils
+
+    # Return title of an image
+    def get_title(self) -> str:
+        """Returns the title of the image based on its specs"""
+        return f'{self.seed}_{self.get_size()}_B{self.black_connexity}_W{self.white_connexity}'
+
+    # Return size of an image
+    def get_size(self) -> int:
+        """Returns the size of the binary image (count of its black pixels)"""
+        return len(self.black_pixels)
 
     def black_pixels_width(self):
         min = float("inf")
@@ -520,14 +501,6 @@ class BinaryImage:
                 max = p.y
 
         return max - min + 1
-
-    # endregion main_methods
-    ##############################
-
-    ##############################
-    # region Utils
-
-
 
     # For the expand, when you add a line of white pixels under or on the left of the figure,
     # We move all the pixel upward or on the right
@@ -603,25 +576,16 @@ class BinaryImage:
         self.black_pixels = self.get_black_pixels()       # Get all the black pixels
         self.size = len(self.black_pixels)                # size = number of black pixels
 
-        # self.height = self.size + 2
-        # self.width = self.black_pixels_width() + 2
-
-        # self.expand_img()
 
         self.expand_image()                                # If black pixels are adjacent to the limit
         self.reduce_image()                              # Collapse white pixels collumn or lines
 
         # All the white pixels 4-adjacent to black_pixels
-        self.borderWhitePixels = self.get_border_image(self.black_connexity)
+        self.border_white_pixels = self.get_border_image(self.black_connexity)
 
         # Check if the image is fully B4,W4-connected
-        self.connected, self.isolatedBlackPixels, self.isolatedWhitePixels = self.is_image_connected()
+        self.connected, self.isolated_black_pixels, self.isolated_white_pixels = self.is_image_connected()
 
-        # creating graph from pixel
-        # self.black_graph, self.white_graph = self.create_graphs(self.black_connexity, self.white_connexity)
-
-    # def expand_img(self):
-    #     return None
 
     # Return a Pixel array with all black pixels
     def get_black_pixels(self) -> [Pixel]:
